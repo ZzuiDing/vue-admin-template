@@ -76,7 +76,48 @@ export const constantRoutes = [
       }
     ]
   },
-
+  {
+    path: '/UserManagement',
+    component: Layout,
+    redirect: '/UserManagement/dashboard',
+    name: 'UserManagement',
+    meta: { title: '用户管理', icon: 'el-icon-s-help' },
+    children: [
+      // {
+      //   path: 'table',
+      //   name: 'Table',
+      //   component: () => import('@/views/table/index'),
+      //   meta: {title: 'Table', icon: 'table'}
+      // },
+      {
+        path: 'Dashboard',
+        name: '用户浏览',
+        component: () => import('@/views/UserManagement.vue'),
+        meta: { title: '用户管理', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/GoodManagement',
+    component: Layout,
+    redirect: '/GoodManagement/dashboard',
+    name: 'UserManagement',
+    meta: { title: '商品管理', icon: 'el-icon-s-help' },
+    children: [
+      // {
+      //   path: 'table',
+      //   name: 'Table',
+      //   component: () => import('@/views/table/index'),
+      //   meta: {title: 'Table', icon: 'table'}
+      // },
+      {
+        path: 'Dashboard',
+        name: '商品用浏览',
+        component: () => import('@/views/GoodManagement.vue'),
+        meta: { title: '商品管理', icon: 'tree' }
+      }
+    ]
+  },
   {
     path: '/form',
     component: Layout,
