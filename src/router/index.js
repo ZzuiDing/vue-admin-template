@@ -113,7 +113,7 @@ export const constantRoutes = [
       {
         path: 'Dashboard',
         name: '商品用浏览',
-        component: () => import('@/views/GoodManagement.vue'),
+        component: () => import('@/views/Good/GoodManagement.vue'),
         meta: { title: '商品管理', icon: 'tree' }
       }
     ]
