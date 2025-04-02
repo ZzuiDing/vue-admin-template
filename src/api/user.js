@@ -18,8 +18,8 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
+    url: 'http://localhost:9090/spba-api/user/logout',
+    method: 'get'
   })
 }
 

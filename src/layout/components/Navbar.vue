@@ -52,8 +52,13 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      try {
+        await this.$store.dispatch('user/logout')
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      } catch (error) {
+        console.error('Logout Error:', error)
+        this.$message.error('登出失败，请稍后重试')
+      }
     }
   }
 }
