@@ -51,10 +51,10 @@ export default {
         name: '',
         price: '',
         desc: '',
-        kind: ''
+        kind: '',
+        picture: ''
       },
-      file: null,
-      imageUrl: ''
+      file: null
     }
   },
   methods: {
@@ -104,7 +104,7 @@ export default {
       const file = params.file
       try {
         const url = await uploadToOSS(file)
-        this.imageUrl = url
+        this.good.picture = url
         this.$message.success('上传成功')
       } catch (error) {
         console.error('上传失败:', error)

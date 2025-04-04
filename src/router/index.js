@@ -119,6 +119,30 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/order',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/form/index'),
+        meta: { title: '订单管理', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/refund',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/form/index'),
+        meta: { title: '退款管理', icon: 'form' }
+      }
+    ]
+  },
+  {
     path: '/form',
     component: Layout,
     children: [
@@ -126,7 +150,19 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: '订单管理', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/kind',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: '种类管理',
+        component: () => import('@/views/kind/kind.vue'),
+        meta: { title: '种类管理', icon: 'kind' }
       }
     ]
   },

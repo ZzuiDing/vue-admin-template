@@ -7,3 +7,10 @@ export function allgoodsList(params) {
     params
   })
 }
+export function add(params) {
+  return request({
+    url: '/spba-api/goods/add',
+    method: 'post',
+    params
+  })
+}

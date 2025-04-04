@@ -15,41 +15,22 @@
       <el-table-column prop="name" label="名称" width="180" />
       <el-table-column prop="price" label="价格" width="180" />
       <el-table-column prop="desc" label="简介" width="180" />
-      <el-table-column prop="kind" label="种类" />
+      <el-table-column prop="kindId" label="种类" />
       <el-table-column prop="key_word" label="关键词" width="180" />
       <el-table-column prop="status" label="状态" width="180" />
       <el-table-column prop="sold_amount" label="销量" width="180" />
     </el-table>
 
-    <!-- ✅ 弹窗：新增商品 -->
+    <!-- 弹窗：新增商品 -->
     <el-dialog :visible.sync="dialogFormVisible" title="新增商品" width="50%" @close="dialogClosed">
       <AddGood @closeDialog="dialogClosed" @refreshTable="fetchData" />
     </el-dialog>
-
-    <!--    <el-dialog-->
-    <!--      v-model="dialogVisible"-->
-    <!--      title="Tips"-->
-    <!--      width="500"-->
-    <!--      :before-close="handleClose"-->
-    <!--    >-->
-    <!--      <span>This is a message</span>-->
-    <!--      <template #footer>-->
-    <!--        <div class="dialog-footer">-->
-    <!--          <el-button @click="dialogVisible = false">Cancel</el-button>-->
-    <!--          <el-button type="primary" @click="dialogVisible = false">-->
-    <!--            Confirm-->
-    <!--          </el-button>-->
-    <!--        </div>-->
-    <!--      </template>-->
-    <!--    </el-dialog>-->
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import AddGood from '@/views/Good/AddGood.vue'
-// import { ref } from 'vue'
-// const dialogFormVisible = ref(false)
 
 export default {
   components: { AddGood },
@@ -57,20 +38,47 @@ export default {
     return {
       input: '',
       tableData: [],
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      kindList: [] // 存储kind数据
     }
   },
   mounted() {
-    this.fetchData()
+    this.fetchKindList() // 获取kindList
+    this.fetchData() // 获取商品数据
   },
   methods: {
+    // 获取所有kind信息
+    async fetchKindList() {
+      try {
+        const response = await axios.get('http://localhost:9090/spba-api/kind/getAll')
+        if (response.data.code === 20000) {
+          this.kindList = response.data.data.records // 保存kind数据
+          console.log(this.kindList)
+        } else {
+          console.error('获取种类数据失败:', response.data.message)
+        }
+      } catch (error) {
+        console.error('获取种类数据失败:', error)
+      }
+    },
+    // 获取商品数据
     async fetchData() {
       try {
         const response = await axios.get('http://localhost:9090/spba-api/goods/ALLGoodsList')
-        this.tableData = response.data.data.records
-        console.log(response.data.data.records)
+        const goods = response.data.data.records
+
+        // 根据商品的kindId，填充对应的kindName
+        goods.forEach(good => {
+          const kind = this.kindList.find(k => k.id === good.kindId)
+          if (kind) {
+            good.kindId = kind.kindName // 给good添加kindName
+          }
+        })
+
+        this.tableData = goods // 更新表格数据
+        console.log(goods) // 打印数据查看结果
       } catch (error) {
-        console.error('获取数据失败:', error)
+        console.error('获取商品数据失败:', error)
       }
     },
     handleSearch() {
@@ -81,6 +89,4 @@ export default {
     }
   }
 }
-
 </script>
-
