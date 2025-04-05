@@ -1,22 +1,22 @@
 <template>
   <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
     <el-form-item label="用户名" prop="name">
-      <el-input v-model="form.name"/>
+      <el-input v-model="form.name" />
     </el-form-item>
     <el-form-item label="邮箱" prop="email">
-      <el-input v-model="form.email"/>
+      <el-input v-model="form.email" />
     </el-form-item>
     <el-form-item label="手机号" prop="phone">
-      <el-input v-model="form.phone"/>
+      <el-input v-model="form.phone" />
     </el-form-item>
     <el-form-item label="角色" prop="role">
       <el-select v-model="form.role" placeholder="请选择角色">
-        <el-option label="管理员" value="admin"/>
-        <el-option label="用户" value="user"/>
+        <el-option label="管理员" value="admin" />
+        <el-option label="用户" value="user" />
       </el-select>
     </el-form-item>
     <el-form-item label="密码" prop="passwd">
-      <el-input v-model="form.passwd" type="passwd"/>
+      <el-input v-model="form.passwd" type="passwd" />
     </el-form-item>
     <el-form-item label="头像">
       <el-upload
@@ -25,8 +25,8 @@
         :show-file-list="false"
         :on-success="handleAvatarSuccess"
       >
-        <img v-if="form.avatar" :src="form.avatar" class="avatar"/>
-        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        <img v-if="form.avatar" :src="form.avatar" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
     </el-form-item>
     <el-form-item>
@@ -58,13 +58,13 @@ export default {
         passwd: ''
       },
       rules: {
-        name: [{required: true, message: '请输入用户名', trigger: 'blur'}],
-        email: [{required: true, message: '请输入邮箱', trigger: 'blur'}],
-        phone: [{required: true, message: '请输入手机号', trigger: 'blur'}],
-        role: [{required: true, message: '请选择角色', trigger: 'change'}],
+        name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+        role: [{ required: true, message: '请选择角色', trigger: 'change' }],
         passwd: [
-          {required: true, message: '请输入密码', trigger: 'blur'},
-          {min: 6, max: 20, message: '密码长度在 6 到 20 个字符之间', trigger: 'blur'}
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '密码长度在 6 到 20 个字符之间', trigger: 'blur' }
         ]
       }
     }
@@ -74,7 +74,7 @@ export default {
       handler(val) {
         // 如果 userData 是一个有效对象，才赋值
         if (val && typeof val === 'object') {
-          this.form = {...val}
+          this.form = { ...val }
         }
       },
       immediate: true

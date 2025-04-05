@@ -2,7 +2,7 @@
  * Created by PanJiaChen on 16/11/18.
  */
 
-import request from '@/utils/request';
+import request from '@/utils/request'
 
 /**
  * @param {string} path
@@ -22,7 +22,7 @@ export function validUsername(str) {
     console.log(res.data)
     if (res.code === 20000) {
       const valid_map = res.data
-      const flag = valid_map.indexOf(str.trim()) >= 0;
+      const flag = valid_map.indexOf(str.trim()) >= 0
       console.log(flag)
       return flag
     } else {

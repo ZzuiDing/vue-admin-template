@@ -15,12 +15,12 @@
       <!-- 登录表单 -->
       <template v-if="isLogin">
         <el-form-item prop="username">
-          <span class="svg-container"><svg-icon icon-class="user"/></span>
-          <el-input v-model="loginForm.username" placeholder="Username"/>
+          <span class="svg-container"><svg-icon icon-class="user" /></span>
+          <el-input v-model="loginForm.username" placeholder="Username" />
         </el-form-item>
 
         <el-form-item prop="password">
-          <span class="svg-container"><svg-icon icon-class="password"/></span>
+          <span class="svg-container"><svg-icon icon-class="password" /></span>
           <el-input
             :key="passwordType"
             v-model="loginForm.password"
@@ -29,35 +29,39 @@
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
         </el-form-item>
 
-        <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;"
-                   @click.native.prevent="handleLogin">Login
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;margin-bottom:30px;"
+          @click.native.prevent="handleLogin"
+        >Login
         </el-button>
       </template>
 
       <!-- 注册表单 -->
       <template v-else>
         <el-form-item prop="name">
-          <el-input v-model="registerForm.name" placeholder="Name"/>
+          <el-input v-model="registerForm.name" placeholder="Name" />
         </el-form-item>
 
         <el-form-item prop="email">
-          <el-input v-model="registerForm.email" placeholder="Email"/>
+          <el-input v-model="registerForm.email" placeholder="Email" />
         </el-form-item>
 
         <el-form-item prop="phone">
-          <el-input v-model="registerForm.phone" placeholder="Phone"/>
+          <el-input v-model="registerForm.phone" placeholder="Phone" />
         </el-form-item>
 
         <el-form-item prop="passwd">
-          <el-input v-model="registerForm.passwd" type="password" placeholder="Password"/>
+          <el-input v-model="registerForm.passwd" type="password" placeholder="Password" />
         </el-form-item>
 
         <el-form-item prop="captcha">
-          <el-input v-model="registerForm.captcha" placeholder="Enter CAPTCHA"/>
+          <el-input v-model="registerForm.captcha" placeholder="Enter CAPTCHA" />
           <div style="margin-top: 5px; color: #bbb;">验证码: {{ fakeCaptcha }}</div>
         </el-form-item>
 
@@ -73,10 +77,9 @@
   </div>
 </template>
 
-
 <script>
 // import {validUsername} from '@/utils/validate'
-import request from '@/utils/request';
+import request from '@/utils/request'
 
 export default {
   name: 'Login',
@@ -135,14 +138,14 @@ export default {
       },
       loginRules: {
         // username: [{required: true, trigger: 'blur', validator: validateUsername}],
-        password: [{required: true, trigger: 'blur', validator: validatePassword}]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       registerRules: {
-        name: [{required: true, message: 'Please enter name', trigger: 'blur'}],
+        name: [{ required: true, message: 'Please enter name', trigger: 'blur' }],
         // email: [{required: true, trigger: 'blur', validator: validateEmail}],
         // phone: [{required: true, trigger: 'blur', validator: validatePhone}],
-        passwd: [{required: true, min: 6, message: 'Password must be at least 6 characters', trigger: 'blur'}],
-        captcha: [{required: true, trigger: 'blur', validator: validateCaptcha}]
+        passwd: [{ required: true, min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }],
+        captcha: [{ required: true, trigger: 'blur', validator: validateCaptcha }]
       },
       passwordType: 'password',
       loading: false,
@@ -172,7 +175,7 @@ export default {
         if (!valid) return
         this.loading = true
         this.$store.dispatch('user/login', this.loginForm).then(() => {
-          this.$router.push({path: this.redirect || '/'})
+          this.$router.push({ path: this.redirect || '/' })
         }).finally(() => {
           this.loading = false
         })
@@ -209,7 +212,6 @@ export default {
   }
 }
 </script>
-
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
