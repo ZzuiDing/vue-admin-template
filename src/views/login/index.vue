@@ -1,129 +1,215 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-
+    <el-form
+      ref="form"
+      :model="isLogin ? loginForm : registerForm"
+      :rules="isLogin ? loginRules : registerRules"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+    >
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">{{ isLogin ? 'Login Form' : 'Register Form' }}</h3>
       </div>
 
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
+      <!-- 登录表单 -->
+      <template v-if="isLogin">
+        <el-form-item prop="username">
+          <span class="svg-container"><svg-icon icon-class="user"/></span>
+          <el-input v-model="loginForm.username" placeholder="Username"/>
+        </el-form-item>
 
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-        </span>
-      </el-form-item>
+        <el-form-item prop="password">
+          <span class="svg-container"><svg-icon icon-class="password"/></span>
+          <el-input
+            :key="passwordType"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="Password"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
+          </span>
+        </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+        <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;"
+                   @click.native.prevent="handleLogin">Login
+        </el-button>
+      </template>
+
+      <!-- 注册表单 -->
+      <template v-else>
+        <el-form-item prop="name">
+          <el-input v-model="registerForm.name" placeholder="Name"/>
+        </el-form-item>
+
+        <el-form-item prop="email">
+          <el-input v-model="registerForm.email" placeholder="Email"/>
+        </el-form-item>
+
+        <el-form-item prop="phone">
+          <el-input v-model="registerForm.phone" placeholder="Phone"/>
+        </el-form-item>
+
+        <el-form-item prop="passwd">
+          <el-input v-model="registerForm.passwd" type="password" placeholder="Password"/>
+        </el-form-item>
+
+        <el-form-item prop="captcha">
+          <el-input v-model="registerForm.captcha" placeholder="Enter CAPTCHA"/>
+          <div style="margin-top: 5px; color: #bbb;">验证码: {{ fakeCaptcha }}</div>
+        </el-form-item>
+
+        <el-button type="primary" style="width:100%;margin-bottom:30px;" @click="handleRegister">Register</el-button>
+      </template>
 
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <span style="cursor: pointer;" @click="toggleForm">
+          {{ isLogin ? "No account? Register now" : "Already have an account? Login" }}
+        </span>
       </div>
-
     </el-form>
   </div>
 </template>
 
+
 <script>
-import { validUsername } from '@/utils/validate'
+// import {validUsername} from '@/utils/validate'
+import request from '@/utils/request';
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
+    // const validateUsername = (rule, value, callback) => {
+    //   if (!validUsername(value)) {
+    //     callback(new Error('Please enter the correct user name'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('Password must be at least 6 characters'))
       } else {
         callback()
       }
     }
+    // const validateEmail = (rule, value, callback) => {
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    //   if (!emailRegex.test(value)) {
+    //     callback(new Error('Invalid email format'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+    // const validatePhone = (rule, value, callback) => {
+    //   const phoneRegex = /^1[3-9]\d{9}$/
+    //   if (!phoneRegex.test(value)) {
+    //     callback(new Error('Invalid phone number'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+    const validateCaptcha = (rule, value, callback) => {
+      if (value !== '1234') {
+        callback(new Error('Incorrect CAPTCHA'))
+      } else {
+        callback()
+      }
+    }
+
     return {
+      isLogin: true,
+      fakeCaptcha: '1234', // 模拟验证码
       loginForm: {
         username: 'admin',
         password: '114514'
       },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+      registerForm: {
+        name: '',
+        email: '',
+        phone: '',
+        passwd: '',
+        captcha: ''
       },
-      loading: false,
+      loginRules: {
+        // username: [{required: true, trigger: 'blur', validator: validateUsername}],
+        password: [{required: true, trigger: 'blur', validator: validatePassword}]
+      },
+      registerRules: {
+        name: [{required: true, message: 'Please enter name', trigger: 'blur'}],
+        // email: [{required: true, trigger: 'blur', validator: validateEmail}],
+        // phone: [{required: true, trigger: 'blur', validator: validatePhone}],
+        passwd: [{required: true, min: 6, message: 'Password must be at least 6 characters', trigger: 'blur'}],
+        captcha: [{required: true, trigger: 'blur', validator: validateCaptcha}]
+      },
       passwordType: 'password',
+      loading: false,
       redirect: undefined
     }
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler(route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
     }
   },
   methods: {
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
+    toggleForm() {
+      this.isLogin = !this.isLogin
       this.$nextTick(() => {
-        this.$refs.password.focus()
+        this.$refs.form.clearValidate()
       })
     },
+    showPwd() {
+      this.passwordType = this.passwordType === 'password' ? '' : 'password'
+    },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+      this.$refs.form.validate(valid => {
+        if (!valid) return
+        this.loading = true
+        this.$store.dispatch('user/login', this.loginForm).then(() => {
+          this.$router.push({path: this.redirect || '/'})
+        }).finally(() => {
+          this.loading = false
+        })
+      })
+    },
+    handleRegister() {
+      this.$refs.form.validate(valid => {
+        if (!valid) return
+        // 模拟提交注册请求
+        console.log('Register Info:', this.registerForm)
+        request.post('http://localhost:9090/spba-api/user/register', this.registerForm).then(response => {
+          if (response.code !== 20000) {
+            this.$message.error('Registration failed: ' + response.message)
+            return
+          }
+        }).catch(error => {
+          console.error('Registration error:', error)
+          this.$message.error('Registration failed: ' + error.message)
+        })
+
+        this.$message.success('Registration successful!')
+
+        // 清空表单并切换回登录
+        this.registerForm = {
+          name: '',
+          email: '',
+          phone: '',
+          passwd: '',
+          captcha: ''
         }
+        this.isLogin = true
       })
     }
   }
 }
 </script>
+
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */

@@ -92,7 +92,7 @@ export const constantRoutes = [
       {
         path: 'Dashboard',
         name: '用户浏览',
-        component: () => import('@/views/UserManagement.vue'),
+        component: () => import('@/views/User/UserManagement.vue'),
         meta: { title: '用户管理', icon: 'tree' }
       }
     ]
