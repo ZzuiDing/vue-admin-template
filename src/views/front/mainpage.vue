@@ -39,11 +39,11 @@
         <component
           :is="currentPage"
           :banners="banners"
-          :hotGoods="hotGoods"
+          :hot-goods="hotGoods"
           :categories="categories"
+          :product-id="currentProductId"
           @go-to-product-detail="goToProductDetail"
           @go-to-home="home"
-          :productId="currentProductId"
         />
       </el-main>
 
@@ -82,7 +82,7 @@
 <script>
 import HomePage from './homepage.vue'
 import ProductDetailPage from './GoodDetail.vue'
-import {getToken} from '@/utils/auth'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'MainPage',

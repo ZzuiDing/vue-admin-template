@@ -35,7 +35,7 @@ export const constantRoutes = [
     path: '/',
     name: 'MainPage',
     component: () => import('@/views/front/mainpage.vue'),
-    meta: {title: '主页', icon: 'home'}
+    meta: { title: '主页', icon: 'home' }
   },
   {
     path: '/product/:id',
