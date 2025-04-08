@@ -32,6 +32,18 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [
   {
+    path: '/',
+    name: 'MainPage',
+    component: () => import('@/views/front/mainpage.vue'),
+    meta: {title: '主页', icon: 'home'}
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: () => import('@/views/front/GoodDetail.vue'),
+    props: true
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
@@ -44,7 +56,7 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: '/backend',
     component: Layout,
     redirect: '/dashboard',
     children: [{
@@ -112,7 +124,7 @@ export const constantRoutes = [
       // },
       {
         path: 'Dashboard',
-        name: '商品用浏览',
+        name: '商品浏览',
         component: () => import('@/views/Good/GoodManagement.vue'),
         meta: { title: '商品管理', icon: 'tree' }
       }
@@ -125,7 +137,7 @@ export const constantRoutes = [
       {
         path: 'index',
         name: 'Form',
-        component: () => import('@/views/form/index'),
+        component: () => import('@/views/order/order.vue'),
         meta: { title: '订单管理', icon: 'form' }
       }
     ]

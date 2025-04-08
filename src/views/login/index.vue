@@ -73,6 +73,13 @@
           {{ isLogin ? "No account? Register now" : "Already have an account? Login" }}
         </span>
       </div>
+      <!-- 返回主页按钮 -->
+      <el-button
+        type="text"
+        style="width:100%;margin-top:10px;"
+        @click="goHome"
+      >Back to Home
+      </el-button>
     </el-form>
   </div>
 </template>
@@ -175,7 +182,7 @@ export default {
         if (!valid) return
         this.loading = true
         this.$store.dispatch('user/login', this.loginForm).then(() => {
-          this.$router.push({ path: this.redirect || '/' })
+          this.$router.push({ path: this.redirect || '/backend/dashboard' })
         }).finally(() => {
           this.loading = false
         })
@@ -208,6 +215,9 @@ export default {
         }
         this.isLogin = true
       })
+    },
+    goHome() {
+      this.$router.push('/')
     }
   }
 }
