@@ -1,34 +1,32 @@
 <template>
   <div class="mainpage">
     <el-container>
-      <el-header>
+      <el-header height="200">
         <el-row type="flex" justify="space-between" align="middle">
-          <!-- 左侧为空 -->
-          <el-col :span="8">创作者购物平台</el-col>
+          <el-col :span="8" @click.native="home">创作者购物平台</el-col>
 
-          <!-- 中间搜索框 -->
           <el-col :span="8" class="search-container">
             <el-input
               v-model="searchQuery"
               placeholder="搜索商品"
               prefix-icon="el-icon-search"
-            ></el-input>
+            />
           </el-col>
 
-          <!-- 右侧用户头像和登录 -->
           <el-col :span="8" class="user-container" style="text-align: right;">
             <el-avatar
               v-if="isLoggedIn"
-              size="40"
+              :size="40"
               :src="userAvatar"
               class="user-avatar"
-            ></el-avatar>
+              @click.native="backend"
+            />
             <el-button
               v-if="!isLoggedIn"
               type="primary"
-              @click="login"
               icon="el-icon-user"
               size="small"
+              @click="login"
             >
               登录
             </el-button>
@@ -37,80 +35,61 @@
       </el-header>
 
       <el-main>
-        <!-- 轮播图 -->
-        <el-carousel height="300px">
-          <el-carousel-item v-for="(item, index) in banners" :key="index">
-            <img :src="item" class="banner-img"/>
-          </el-carousel-item>
-        </el-carousel>
-
-        <!-- 热门商品 -->
-        <section class="section">
-          <h2 class="section-title">🔥 热门推荐</h2>
-          <el-row :gutter="20">
-            <el-col :span="6" v-for="(item, index) in hotGoods" :key="index">
-              <el-card shadow="hover" @click="goToProductDetail(item.id)">
-                <img :src="item.img" class="product-img"/>
-                <div class="product-info">
-                  <h3>{{ item.name }}</h3>
-                  <p class="price">¥{{ item.price }}</p>
-                </div>
-              </el-card>
-            </el-col>
-          </el-row>
-        </section>
-
-        <!-- 分类 -->
-        <section class="section">
-          <h2 class="section-title">📦 商品分类</h2>
-          <el-row :gutter="20">
-            <el-col :span="8" v-for="(item, index) in categories" :key="index">
-              <el-card class="category-card">
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.desc }}</p>
-              </el-card>
-            </el-col>
-          </el-row>
-        </section>
+        <!-- 动态组件显示 -->
+        <component
+          :is="currentPage"
+          :banners="banners"
+          :hotGoods="hotGoods"
+          :categories="categories"
+          @go-to-product-detail="goToProductDetail"
+          @go-to-home="home"
+          :productId="currentProductId"
+        />
       </el-main>
 
-      <el-footer>Footer</el-footer>
-    </el-container>
+      <el-footer>
+        <!-- 浮动购物车按钮 -->
+        <el-button class="cart-button" type="primary" circle @click="cartVisible = true">
+          🛒
+        </el-button>
 
-    <!-- 浮动购物车按钮 -->
-    <el-button class="cart-button" type="primary" circle @click="cartVisible = true">
-      🛒
-    </el-button>
-
-    <!-- 购物车抽屉 -->
-    <el-drawer
-      :visible.sync="cartVisible"
-      title="🛒 我的购物车"
-      direction="rtl"
-      size="300px"
-    >
-      <div v-if="cartItems.length">
-        <el-card
-          v-for="(item, index) in cartItems"
-          :key="index"
-          style="margin-bottom: 10px;"
+        <!-- 购物车抽屉 -->
+        <el-drawer
+          :visible.sync="cartVisible"
+          title="🛒 我的购物车"
+          direction="rtl"
+          size="300px"
         >
-          <div>{{ item.name }}</div>
-          <div class="price">¥{{ item.price }}</div>
-        </el-card>
-      </div>
-      <div v-else>
-        <p>购物车为空~</p>
-      </div>
-    </el-drawer>
+          <div v-if="cartItems.length">
+            <el-card
+              v-for="(item, index) in cartItems"
+              :key="index"
+              style="margin-bottom: 10px;"
+            >
+              <div>{{ item.name }}</div>
+              <div class="price">¥{{ item.price }}</div>
+            </el-card>
+          </div>
+          <div v-else>
+            <p>购物车为空~</p>
+          </div>
+        </el-drawer>
+      </el-footer>
+    </el-container>
   </div>
 </template>
 
 <script>
-import {getToken} from "@/utils/auth";
+import HomePage from './homepage.vue'
+import ProductDetailPage from './GoodDetail.vue'
+import {getToken} from '@/utils/auth'
 
 export default {
   name: 'MainPage',
+  components: {
+    HomePage,
+    ProductDetailPage
+  },
   data() {
     return {
       banners: [
@@ -118,33 +97,58 @@ export default {
         'https://cdn.pixabay.com/photo/2016/03/09/09/17/store-1245754_960_720.jpg'
       ],
       hotGoods: [
-        {id: 1, name: '手机', price: 2999, img: 'https://via.placeholder.com/300x200?text=Phone'},
-        {id: 2, name: '电脑', price: 5999, img: 'https://via.placeholder.com/300x200?text=Laptop'},
-        {id: 3, name: '耳机', price: 399, img: 'https://via.placeholder.com/300x200?text=Headphone'},
-        {id: 4, name: '手表', price: 899, img: 'https://via.placeholder.com/300x200?text=Watch'}
+        { id: 1, name: '手机', price: 2999, img: '' },
+        { id: 2, name: '电脑', price: 5999, img: '' },
+        { id: 3, name: '耳机', price: 399, img: '' },
+        { id: 4, name: '手表', price: 899, img: '' }
       ],
       categories: [
-        {title: '数码家电', desc: '最新潮流的电子产品等你来选购'},
-        {title: '服饰美妆', desc: '时尚穿搭与护肤新品应有尽有'},
-        {title: '日用百货', desc: '生活必备，品质好物尽在其中'}
+        { title: '数码家电', desc: '最新潮流的电子产品等你来选购' },
+        { title: '服饰美妆', desc: '时尚穿搭与护肤新品应有尽有' },
+        { title: '日用百货', desc: '生活必备，品质好物尽在其中' }
       ],
       cartVisible: false,
       cartItems: [
-        {name: '手机', price: 2999},
-        {name: '耳机', price: 399}
+        { name: '手机', price: 2999 },
+        { name: '耳机', price: 399 }
       ],
       searchQuery: '', // 搜索框绑定的查询内容
       isLoggedIn: false, // 用户登录状态
-      userAvatar: 'https://via.placeholder.com/40', // 用户头像
+      userAvatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
+      currentPage: 'HomePage', // 当前显示的页面组件
+      currentProductId: null
+    }
+  },
+  mounted() {
+    // 检查用户登录状态
+    const token = getToken()
+    if (token) {
+      this.isLoggedIn = true
+      // 这里可以获取用户信息，例如头像等
+      this.userAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+    } else {
+      this.isLoggedIn = false
     }
   },
   methods: {
     login() {
-      this.$router.push('/backend/dashboard');
+      this.$router.push('/backend/dashboard')
     },
     // 跳转到商品详情页
     goToProductDetail(productId) {
-      this.$router.push({name: 'ProductDetail', params: {id: productId}})
+      console.log('跳转到商品详情页，商品ID:', productId)
+      this.currentPage = 'ProductDetailPage'
+      this.currentProductId = productId
+    },
+    // 跳转到后台管理页面
+    backend() {
+      console.log('Avatar clicked, navigating to backend dashboard...')
+      this.$router.push('/backend/dashboard')
+    },
+    home() {
+      console.log('Home clicked, navigating to home page...')
+      this.currentPage = 'HomePage'
+      this.currentProductId = null
     }
   }
 }
@@ -210,5 +214,19 @@ export default {
 
 .cart-item {
   margin-bottom: 10px;
+}
+.cart-item .price {
+  color: #e91e63;
+  font-weight: bold;
+}
+.cart-item .product-img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.el-header {
+  background-color: #39c5bb;
+  padding: 10px;
 }
 </style>
