@@ -66,28 +66,28 @@ export const constantRoutes = [
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
+  //
+  // {
+  //   path: '/example',
+  //   component: Layout,
+  //   redirect: '/example/table',
+  //   name: 'Example',
+  //   meta: { title: 'Example', icon: 'el-icon-s-help' },
+  //   children: [
+  //     {
+  //       path: 'table',
+  //       name: 'Table',
+  //       component: () => import('@/views/table/index'),
+  //       meta: { title: 'Table', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'tree',
+  //       name: 'Tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: 'Tree', icon: 'tree' }
+  //     }
+  //   ]
+  // },
   {
     path: '/UserManagement',
     component: Layout,
@@ -132,25 +132,34 @@ export const constantRoutes = [
   },
   {
     path: '/order',
+    name: '管理',
     component: Layout,
+    redirect: '/order/index',
+    meta: { title: '订单管理', icon: 'form' },
     children: [
       {
         path: 'index',
         name: 'Form',
         component: () => import('@/views/order/order.vue'),
         meta: { title: '订单管理', icon: 'form' }
+      },
+      {
+        path: 'refund',
+        name: 'refund',
+        component: () => import('@/views/refund/refund.vue'),
+        meta: { title: '退款管理', icon: 'form' }
       }
     ]
   },
   {
-    path: '/refund',
+    path: '/address',
     component: Layout,
     children: [
       {
         path: 'index',
         name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: '退款管理', icon: 'form' }
+        component: () => import('@/views/address/address.vue'),
+        meta: { title: '我的地址', icon: 'form' }
       }
     ]
   },

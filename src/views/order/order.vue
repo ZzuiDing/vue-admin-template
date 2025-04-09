@@ -12,9 +12,9 @@
       <el-table-column prop="amount" label="购买数量" min-width="120" />
       <el-table-column prop="date" label="日期" min-width="180" />
       <el-table-column prop="status" label="当前状态" min-width="100" />
-      <el-table-column prop="pay_method" label="支付方式" min-width="80" />
-      <el-table-column prop="pay_amount" label="支付金额" min-width="80" />
-      <el-table-column prop="expres_id" label="快递号" min-width="80" />
+      <el-table-column prop="payMethod" label="支付方式" min-width="80" />
+      <el-table-column prop="payAmount" label="支付金额" min-width="80" />
+      <el-table-column prop="expressId" label="快递号" min-width="80" />
       <el-table-column prop="address" label="地址" min-width="80" />
       <el-table-column label="操作" min-width="200">
         <template #default="scope">
