@@ -1,16 +1,16 @@
 <template>
   <div>
-    <el-input v-model="input" placeholder="请输入地址关键词" style="width: 200px; margin-bottom: 20px;"/>
+    <el-input v-model="input" placeholder="请输入地址关键词" style="width: 200px; margin-bottom: 20px;" />
     <el-button type="primary" @click="handleSearch">搜索</el-button>
     <el-button plain @click="dialogFormVisible = true">新增地址</el-button>
 
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="id" label="ID" width="80"/>
-      <el-table-column prop="address" label="地址" width="200"/>
-      <el-table-column prop="name" label="收件人" width="120"/>
-      <el-table-column prop="phone" label="电话" width="150"/>
-      <el-table-column prop="desc" label="备注" width="200"/>
-      <el-table-column prop="userId" label="用户ID" width="100"/>
+      <el-table-column prop="id" label="ID" width="80" />
+      <el-table-column prop="address" label="地址" width="200" />
+      <el-table-column prop="name" label="收件人" width="120" />
+      <el-table-column prop="phone" label="电话" width="150" />
+      <el-table-column prop="desc" label="备注" width="200" />
+      <el-table-column prop="userId" label="用户ID" width="100" />
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.row)">修改</el-button>
@@ -20,7 +20,7 @@
     </el-table>
 
     <el-dialog :visible.sync="dialogFormVisible" title="地址编辑" width="50%" @close="dialogClosed">
-      <edit-address :address-data="selectedAddress" @closeDialog="dialogClosed" @refreshTable="fetchData"/>
+      <edit-address :address-data="selectedAddress" @closeDialog="dialogClosed" @refreshTable="fetchData" />
     </el-dialog>
   </div>
 </template>
@@ -30,7 +30,7 @@ import axios from 'axios'
 import EditAddress from '@/views/address/addressManagement.vue'
 
 export default {
-  components: {EditAddress},
+  components: { EditAddress },
   data() {
     return {
       input: '',
@@ -52,7 +52,7 @@ export default {
       }
     },
     handleEdit(row) {
-      this.selectedAddress = {...row}
+      this.selectedAddress = { ...row }
       this.dialogFormVisible = true
     },
     dialogClosed() {
@@ -67,7 +67,7 @@ export default {
         confirmButtonText: '删除',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(async () => {
+      }).then(async() => {
         try {
           const response = await axios.post(`http://localhost:9090/spba-api/address/delete?id=${row.id}`)
           if (response.data.code !== 20000) throw new Error(response.data.message || '删除失败')

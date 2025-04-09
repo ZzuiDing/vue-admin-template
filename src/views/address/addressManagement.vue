@@ -1,20 +1,20 @@
 <template>
   <div>
-    <el-form :model="form" label-width="100px" :rules="rules" ref="formRef">
+    <el-form ref="formRef" :model="form" label-width="100px" :rules="rules">
       <el-form-item label="地址" prop="address">
-        <el-input v-model="form.address"/>
+        <el-input v-model="form.address" />
       </el-form-item>
       <el-form-item label="收件人" prop="name">
-        <el-input v-model="form.name"/>
+        <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="电话" prop="phone">
-        <el-input v-model="form.phone"/>
+        <el-input v-model="form.phone" />
       </el-form-item>
       <el-form-item label="备注" prop="desc">
-        <el-input type="textarea" v-model="form.desc"/>
+        <el-input v-model="form.desc" type="textarea" />
       </el-form-item>
       <el-form-item label="用户ID" prop="userId">
-        <el-input v-model="form.userId"/>
+        <el-input v-model="form.userId" />
       </el-form-item>
     </el-form>
 
@@ -46,10 +46,10 @@ export default {
         userId: ''
       },
       rules: {
-        address: [{required: true, message: '请输入地址', trigger: 'blur'}],
-        name: [{required: true, message: '请输入收件人', trigger: 'blur'}],
-        phone: [{required: true, message: '请输入电话', trigger: 'blur'}],
-        userId: [{required: true, message: '请输入用户ID', trigger: 'blur'}]
+        address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入收件人', trigger: 'blur' }],
+        phone: [{ required: true, message: '请输入电话', trigger: 'blur' }],
+        userId: [{ required: true, message: '请输入用户ID', trigger: 'blur' }]
       }
     }
   },
@@ -57,13 +57,13 @@ export default {
     addressData: {
       immediate: true,
       handler(val) {
-        if (val) this.form = {...val}
+        if (val) this.form = { ...val }
       }
     }
   },
   methods: {
     async submitForm() {
-      this.$refs.formRef.validate(async (valid) => {
+      this.$refs.formRef.validate(async(valid) => {
         if (!valid) return
 
         const url = this.form.id
