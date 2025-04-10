@@ -1,6 +1,10 @@
 <template>
   <div>
-    <el-input v-model="input" placeholder="请输入订单ID" style="width: 200px; margin-bottom: 20px;" />
+    <el-input
+      v-model="input"
+      placeholder="请输入订单ID"
+      style="width: 200px; margin-bottom: 20px;"
+    />
     <el-button type="primary" @click="handleSearch">搜索</el-button>
     <el-button plain @click="openAddDialog()">新增订单</el-button>
 
@@ -18,12 +22,24 @@
       <el-table-column prop="address" label="地址" min-width="80" />
       <el-table-column label="操作" min-width="200">
         <template #default="scope">
-          <el-button size="mini" type="primary" @click="openEditDialog(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="deleteOrder(scope.row)">删除</el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            @click="openEditDialog(scope.row)"
+          >编辑
+          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            style="margin-left: 10px;"
+            @click="deleteOrder(scope.row)"
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
+    <!-- 弹窗：新增/编辑订单 -->
     <el-dialog
       :visible.sync="dialogFormVisible"
       :title="editOrder ? '编辑订单' : '新增订单'"
@@ -40,8 +56,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import EditOrder from '@/views/order/editOrder.vue'
+import {
+  getOrderList,
+  deleteOrderById
+} from '@/api/order'
 
 export default {
   components: { EditOrder },
@@ -66,20 +85,21 @@ export default {
   methods: {
     async fetchData() {
       try {
-        const response = await axios.get('http://localhost:9090/spba-api/order/getOrderList')
-        if (response.data.code === 20000) {
-          this.tableData = response.data.data
+        const res = await getOrderList()
+        if (res.code === 20000) {
+          this.tableData = res.data
         } else {
-          this.$message.error('获取订单数据失败: ' + response.data.message)
+          this.$message.error('获取订单数据失败: ' + res.message)
         }
       } catch (error) {
         console.error('获取订单数据失败:', error)
+        this.$message.error('获取订单数据失败')
       }
     },
     handleSearch() {
       console.log('搜索订单ID:', this.input)
-      // 如果有搜索接口可调用如下：
-      // axios.get('/api/order/search', { params: { id: this.input } })
+      // TODO: 如果有后台搜索接口，可调用：
+      // const res = await searchOrderById(this.input)
     },
     openAddDialog() {
       this.editOrder = null
@@ -94,27 +114,30 @@ export default {
       this.editOrder = null
     },
     async deleteOrder(order) {
-      this.$confirm('确定删除该订单吗?', '提示', {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async() => {
-        try {
-          const response = await axios.post(`http://localhost:9090/spba-api/order/deleteOrder?id=${order.id}`)
-          if (response.data.code !== 20000) {
-            throw new Error(response.data.message)
-          }
+      try {
+        await this.$confirm('确定删除该订单吗?', '提示', {
+          confirmButtonText: '删除',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        const res = await deleteOrderById(order.id)
+        if (res.code === 20000) {
           this.$message.success('删除成功！')
           this.fetchData()
-        } catch (error) {
-          this.$message.error('删除失败: ' + (error.message || '服务器错误'))
+        } else {
+          this.$message.error('删除失败: ' + res.message)
         }
-      })
+      } catch (err) {
+        if (err !== 'cancel') {
+          console.error('删除失败:', err)
+          this.$message.error('删除失败: ' + (err.message || '服务器错误'))
+        }
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-/* 样式同之前的用户管理样式 */
+/* 可以按需添加样式 */
 </style>

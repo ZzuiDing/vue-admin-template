@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-form ref="form" :model="localKind" label-width="100px">
-      <!-- 只有在 kind.id 存在时才显示 ID 输入框 -->
+      <!-- 编辑时显示 ID -->
       <el-form-item v-if="localKind.id" label="ID" prop="id">
-        <el-input v-model="localKind.id" placeholder="请输入商品ID" :disabled="true" />
+        <el-input v-model="localKind.id" disabled />
       </el-form-item>
 
       <el-form-item label="种类名称" prop="kindName">
@@ -11,7 +11,7 @@
       </el-form-item>
     </el-form>
 
-    <div style="text-align: right">
+    <div style="text-align: right; margin-top: 10px;">
       <el-button @click="closeDialog">取消</el-button>
       <el-button type="primary" @click="submitForm">提交</el-button>
     </div>
@@ -19,51 +19,76 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { addKind, updateKind } from '@/api/kind'
 
 export default {
+  name: 'AddKind',
   props: {
-    kind: Object // 接收父组件传递的 kind prop
+    kind: {
+      type: Object,
+      default: () => ({})
+    }
   },
   data() {
     return {
-      // 如果 kind 是 null 或 undefined，使用默认对象
-      localKind: { ...this.kind } || { id: '', kindName: '' }
+      // 本地拷贝，避免直接修改父组件传入的 prop
+      localKind: {
+        id: '',
+        kindName: ''
+      }
+    }
+  },
+  computed: {
+    isEdit() {
+      return !!(this.localKind && this.localKind.id)
     }
   },
   watch: {
-    // 监听 kind 变化，确保 kind 不为 null 或 undefined
-    kind(newKind) {
-      if (newKind && (newKind.id !== this.localKind.id || newKind.kindName !== this.localKind.kindName)) {
-        this.localKind = { ...newKind }
-      }
+    // 当父组件传入的 kind 变化时，更新本地表单
+    kind: {
+      handler(val) {
+        if (val && val.id != null) {
+          this.localKind = { ...val }
+        } else {
+          this.resetForm()
+        }
+      },
+      immediate: true,
+      deep: true
     }
   },
   methods: {
-    async submitForm() {
-      try {
-        if (!this.localKind.id) {
-          await axios.post('http://localhost:9090/spba-api/kind/add', { kindName: this.localKind.kindName })
-          this.$message.success('新增成功！')
-        } else {
-          await axios.post('http://localhost:9090/spba-api/kind/update', this.localKind)
-          this.$message.success('修改成功！')
-        }
-        this.resetForm()
-        this.$emit('closeDialog')
-        this.$emit('refreshTable')
-      } catch (error) {
-        console.error('提交失败:', error)
-        this.$message.error('提交失败，请检查输入！')
-      }
-    },
     resetForm() {
-      this.localKind = { id: '', kindName: '' } // 清空 localKind
+      this.localKind = {
+        id: '',
+        kindName: ''
+      }
+      // 如果你有校验规则，可以调用 this.$refs.form.resetFields()
     },
     closeDialog() {
       this.resetForm()
       this.$emit('closeDialog')
+    },
+    async submitForm() {
+      try {
+        const fn = this.isEdit ? updateKind : addKind
+        const res = await fn(this.localKind)
+        if (res.code === 20000) {
+          this.$message.success(this.isEdit ? '修改成功！' : '新增成功！')
+          this.$emit('refreshTable')
+          this.closeDialog()
+        } else {
+          this.$message.error(res.message || '操作失败')
+        }
+      } catch (error) {
+        console.error('提交失败:', error)
+        this.$message.error('提交失败，请重试')
+      }
     }
   }
 }
 </script>
+
+<style scoped>
+/* 根据需要添加样式 */
+</style>

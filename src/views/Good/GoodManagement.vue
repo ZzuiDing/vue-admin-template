@@ -43,8 +43,10 @@
 </template>
 
 <script>
-import axios from 'axios'
 import AddGood from '@/views/Good/AddGood.vue'
+import store from '@/store'
+import { getAllKinds } from '@/api/kind'
+import { getAllGoods, getGoodsByUserId, deleteGoodById } from '@/api/good'
 
 export default {
   components: { AddGood },
@@ -53,22 +55,20 @@ export default {
       input: '',
       tableData: [],
       dialogFormVisible: false,
-      editGood: null, // 记录要编辑的商品
+      editGood: null,
       kindList: []
     }
   },
   watch: {
     dialogFormVisible(val) {
       if (!val) {
-        console.log('弹窗已关闭')
         this.editGood = null
-        console.log(this.editGood)// 关闭弹窗时清空数据
       }
     },
     editGood(newValue) {
       if (!newValue) {
         this.$nextTick(() => {
-          this.editGood = null // 确保 Vue 响应式清空
+          this.editGood = null
         })
       }
     }
@@ -80,75 +80,78 @@ export default {
   methods: {
     async fetchKindList() {
       try {
-        const response = await axios.get('http://localhost:9090/spba-api/kind/getAll')
-        if (response.data.code === 20000) {
-          this.kindList = response.data.data.records
+        const response = await getAllKinds()
+        if (response.code === 20000) {
+          this.kindList = response.data.records
         } else {
-          console.error('获取种类数据失败:', response.data.message)
+          this.$message.error(`获取种类失败: ${response.message}`)
         }
       } catch (error) {
         console.error('获取种类数据失败:', error)
+        this.$message.error('获取种类数据失败')
       }
     },
     async fetchData() {
       try {
-        const response = await axios.get('http://localhost:9090/spba-api/goods/ALLGoodsList')
-        const goods = response.data.data.records
+        let response
+        if (store.getters.role !== 1) {
+          response = await getAllGoods()
+        } else {
+          response = await getGoodsByUserId()
+        }
+
+        const goods = response.data.records
 
         goods.forEach(good => {
           const kind = this.kindList.find(k => k.id === good.kindId)
           if (kind) {
-            good.kindName = kind.kindName // 保留 kindId，新增 kindName 字段
+            good.kindName = kind.kindName
           }
         })
+
         this.tableData = goods
-        console.log('商品数据:', this.tableData)
       } catch (error) {
         console.error('获取商品数据失败:', error)
+        this.$message.error('获取商品数据失败')
       }
     },
     handleSearch() {
       console.log('搜索:', this.input)
+      // 可加入模糊搜索逻辑，例如过滤 this.tableData
     },
     openAddDialog() {
-      this.editGood = null // 新增时清空数据
+      this.editGood = null
       this.dialogFormVisible = true
-      console.log(this.editGood)
     },
     openEditDialog(good) {
-      this.editGood = { ...good } // 复制对象，防止修改原数据
+      this.editGood = { ...good }
       this.dialogFormVisible = true
     },
     dialogClosed() {
-      this.editGood = null // 先清空数据
-      this.dialogFormVisible = false // 再关闭弹窗
+      this.editGood = null
+      this.dialogFormVisible = false
     },
-    deleteGood(row) {
-      this.$confirm('确定删除该种类吗?', '提示', {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async() => {
-        // 删除数据逻辑（在这里假设通过接口删除）
-        try {
-          const response = await axios.post(`http://localhost:9090/spba-api/goods/delete?id=${row.id}`)
-          // 检查返回结果，如果返回的 code 为 500，则主动抛出异常
-          if (response.data.code === 500) {
-            throw new Error(response.data.message || '删除失败，请检查输入')
-          }
-          this.$message.success('删除成功！')
-          await this.fetchData() // 刷新数据
-        } catch (error) {
-          console.error('删除失败:', error)
-          if (error.response && error.response.data) {
-            this.$message.error(`删除失败: ${error.response.data.message || '请检查输入'}`)
-          } else {
-            this.$message.error(`删除失败: ${error.message || '服务器错误'}`)
-          }
+    async deleteGood(row) {
+      try {
+        await this.$confirm('确定删除该商品吗?', '提示', {
+          confirmButtonText: '删除',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+
+        const response = await deleteGoodById(row.id)
+        if (response.code !== 20000) {
+          throw new Error(response.message || '删除失败')
         }
-      })
-      // dialogClosed() {
-      //   this.dialogFormVisible = false
+
+        this.$message.success('删除成功！')
+        this.fetchData()
+      } catch (error) {
+        if (error !== 'cancel') {
+          console.error('删除失败:', error)
+          this.$message.error(`删除失败: ${error.message || '服务器错误'}`)
+        }
+      }
     }
   }
 }
