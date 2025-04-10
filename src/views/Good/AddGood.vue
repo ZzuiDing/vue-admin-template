@@ -149,7 +149,7 @@ export default {
         name: '',
         price: '',
         picture: '',
-        kind: '',
+        kindId: '',
         desc: ''
       }
       this.file = null
@@ -170,7 +170,7 @@ export default {
       }
     },
     beforeUpload(file) {
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp'
       const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPG) {

@@ -23,10 +23,47 @@ export function logout() {
   })
 }
 
-export function getuserList(params) {
+/**
+ * 获取用户列表
+ */
+export function getUserList() {
   return request({
-    url: '/spba-api/user/list',
-    method: 'get',
-    params
+    url: '/spba-api/user/getUserList',
+    method: 'get'
+  })
+}
+
+/**
+ * 新增用户
+ * @param {Object} data 用户对象
+ */
+export function addUser(data) {
+  return request({
+    url: '/spba-api/user/register',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 修改用户
+ * @param {Object} data 用户对象（含 id）
+ */
+export function updateUser(data) {
+  return request({
+    url: '/spba-api/user/updateUser',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 删除指定用户
+ * @param {number} id 用户ID
+ */
+export function deleteUserById(id) {
+  return request({
+    url: `/spba-api/user/deleteUser?id=${id}`,
+    method: 'post'
   })
 }

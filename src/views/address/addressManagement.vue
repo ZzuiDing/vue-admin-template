@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-form ref="formRef" :model="form" label-width="100px" :rules="rules">
+    <el-form
+      ref="formRef"
+      :model="form"
+      label-width="100px"
+      :rules="rules"
+    >
       <el-form-item label="地址" prop="address">
         <el-input v-model="form.address" />
       </el-form-item>
@@ -19,16 +24,20 @@
     </el-form>
 
     <div slot="footer" class="dialog-footer">
-      <el-button @click="$emit('closeDialog')">取 消</el-button>
+      <el-button @click="closeDialog">取 消</el-button>
       <el-button type="primary" @click="submitForm">确 定</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import {
+  createAddress,
+  updateAddress
+} from '@/api/address'
 
 export default {
+  name: 'EditAddress',
   props: {
     addressData: {
       type: Object,
@@ -53,34 +62,67 @@ export default {
       }
     }
   },
+  computed: {
+    isEdit() {
+      return this.form.id != null
+    }
+  },
   watch: {
     addressData: {
       immediate: true,
       handler(val) {
-        if (val) this.form = { ...val }
+        if (val && val.id != null) {
+          this.form = { ...val }
+        } else {
+          this.resetForm()
+        }
       }
     }
   },
   methods: {
-    async submitForm() {
-      this.$refs.formRef.validate(async(valid) => {
+    resetForm() {
+      this.form = {
+        id: null,
+        address: '',
+        name: '',
+        phone: '',
+        desc: '',
+        userId: ''
+      }
+      // 如果你需要清除校验状态，可调用：
+      // this.$refs.formRef.clearValidate()
+    },
+    closeDialog() {
+      this.$emit('closeDialog')
+      this.resetForm()
+    },
+    submitForm() {
+      this.$refs.formRef.validate(async valid => {
         if (!valid) return
 
-        const url = this.form.id
-          ? 'http://localhost:9090/spba-api/address/update'
-          : 'http://localhost:9090/spba-api/address/create'
-
         try {
-          const res = await axios.post(url, this.form)
-          if (res.data.code !== 20000) throw new Error(res.data.message)
-          this.$message.success(this.form.id ? '修改成功' : '新增成功')
-          this.$emit('closeDialog')
-          this.$emit('refreshTable')
+          const fn = this.isEdit ? updateAddress : createAddress
+          const res = await fn(this.form)
+          if (res.code === 20000) {
+            this.$message.success(this.isEdit ? '修改成功' : '新增成功')
+            this.$emit('refreshTable')
+            this.closeDialog()
+          } else {
+            this.$message.error(res.message || '操作失败')
+          }
         } catch (err) {
-          this.$message.error('保存失败: ' + err.message)
+          console.error('保存失败:', err)
+          this.$message.error('保存失败，请重试')
         }
       })
     }
   }
 }
 </script>
+
+<style scoped>
+.dialog-footer {
+  text-align: right;
+  margin-top: 20px;
+}
+</style>
