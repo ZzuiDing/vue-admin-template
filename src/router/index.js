@@ -21,7 +21,7 @@ export const constantRoutes = [
   {
     path: '/product/:id',
     name: 'ProductDetail',
-    component: () => import('@/views/front/GoodDetail.vue'),
+    component: () => import('@/views/front/ProductDetailPage.vue'),
     props: true
   },
   {

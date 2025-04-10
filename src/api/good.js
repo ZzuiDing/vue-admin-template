@@ -55,3 +55,25 @@ export function deleteGoodById(id) {
     method: 'post'
   })
 }
+
+/**
+ * 获取热销商品
+ * @returns {Promise} 热销商品列表
+ */
+export function topSoldGoods() {
+  return request({
+    url: '/spba-api/goods/topSoldGoods',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取商品详情
+ * @param {number} id 商品ID
+ */
+export function getGoodById(id) {
+  return request({
+    url: `/spba-api/goods/detail?id=${id}`,
+    method: 'get'
+  })
+}

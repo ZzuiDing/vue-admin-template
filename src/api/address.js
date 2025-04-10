@@ -6,7 +6,7 @@ import request from '@/utils/request'
  */
 export function getAllAddresses() {
   return request({
-    url: '/spba-api/address/getAll',
+    url: '/spba-api/address/getAddressListByUserId',
     method: 'get'
   })
 }
@@ -17,7 +17,7 @@ export function getAllAddresses() {
  */
 export function createAddress(data) {
   return request({
-    url: '/spba-api/address/create',
+    url: '/spba-api/address/addAddress',
     method: 'post',
     data
   })
@@ -29,7 +29,7 @@ export function createAddress(data) {
  */
 export function updateAddress(data) {
   return request({
-    url: '/spba-api/address/update',
+    url: '/spba-api/address/updateAddress',
     method: 'post',
     data
   })
@@ -41,7 +41,7 @@ export function updateAddress(data) {
  */
 export function deleteAddressById(id) {
   return request({
-    url: `/spba-api/address/delete?id=${id}`,
+    url: `/spba-api/address/deleteAddress?id=${id}`,
     method: 'post'
   })
 }

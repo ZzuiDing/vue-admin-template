@@ -1,9 +1,10 @@
 <template>
   <div class="mainpage">
     <el-container>
-      <el-header height="200">
+      <!-- 顶部导航栏 -->
+      <el-header class="header">
         <el-row type="flex" justify="space-between" align="middle">
-          <el-col :span="8" @click.native="home">创作者购物平台</el-col>
+          <el-col :span="8" class="logo" @click.native="home">创作者购物平台</el-col>
 
           <el-col :span="8" class="search-container">
             <el-input
@@ -34,6 +35,7 @@
         </el-row>
       </el-header>
 
+      <!-- 主页内容 -->
       <el-main>
         <!-- 动态组件显示 -->
         <component
@@ -47,6 +49,7 @@
         />
       </el-main>
 
+      <!-- 底部购物车 -->
       <el-footer>
         <!-- 浮动购物车按钮 -->
         <el-button class="cart-button" type="primary" circle @click="cartVisible = true">
@@ -80,14 +83,15 @@
 </template>
 
 <script>
-import HomePage from './homepage.vue'
-import ProductDetailPage from './GoodDetail.vue'
+import HomePage from './HomePage.vue'
+import ProductDetailPage from './ProductDetailPage.vue'
 import { getToken } from '@/utils/auth'
+import { topSoldGoods } from '@/api/good'
 
 export default {
   name: 'MainPage',
   components: {
-    HomePage,
+    HomePage: HomePage,
     ProductDetailPage
   },
   data() {
@@ -96,12 +100,7 @@ export default {
         'https://cdn.pixabay.com/photo/2016/11/22/19/31/adult-1850925_960_720.jpg',
         'https://cdn.pixabay.com/photo/2016/03/09/09/17/store-1245754_960_720.jpg'
       ],
-      hotGoods: [
-        { id: 1, name: '手机', price: 2999, img: '' },
-        { id: 2, name: '电脑', price: 5999, img: '' },
-        { id: 3, name: '耳机', price: 399, img: '' },
-        { id: 4, name: '手表', price: 899, img: '' }
-      ],
+      hotGoods: [],
       categories: [
         { title: '数码家电', desc: '最新潮流的电子产品等你来选购' },
         { title: '服饰美妆', desc: '时尚穿搭与护肤新品应有尽有' },
@@ -129,6 +128,8 @@ export default {
     } else {
       this.isLoggedIn = false
     }
+    // 获取数据
+    this.fetchData()
   },
   methods: {
     login() {
@@ -149,6 +150,12 @@ export default {
       console.log('Home clicked, navigating to home page...')
       this.currentPage = 'HomePage'
       this.currentProductId = null
+    },
+    async fetchData() {
+      // 获取热销商品数据
+      const response = await topSoldGoods()
+      console.log('获取热销商品:', response)
+      this.hotGoods = response.data.records
     }
   }
 }
@@ -160,41 +167,9 @@ export default {
   position: relative;
 }
 
-.banner-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.section {
-  margin-top: 30px;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.product-img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.product-info {
-  margin-top: 10px;
-}
-
-.price {
-  color: #e91e63;
-  font-weight: bold;
-}
-
-.category-card {
-  min-height: 120px;
-  text-align: center;
+.header {
+  background-color: #39c5bb;
+  padding: 10px;
 }
 
 .cart-button {
@@ -215,16 +190,7 @@ export default {
 .cart-item {
   margin-bottom: 10px;
 }
-.cart-item .price {
-  color: #e91e63;
-  font-weight: bold;
-}
-.cart-item .product-img {
-  width: 100%;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 8px;
-}
+
 .el-header {
   background-color: #39c5bb;
   padding: 10px;

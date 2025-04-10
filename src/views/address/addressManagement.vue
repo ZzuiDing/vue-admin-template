@@ -18,8 +18,8 @@
       <el-form-item label="备注" prop="desc">
         <el-input v-model="form.desc" type="textarea" />
       </el-form-item>
-      <el-form-item label="用户ID" prop="userId">
-        <el-input v-model="form.userId" />
+      <el-form-item v-if="form.userId" label="用户ID" prop="userId">
+        <el-input v-model="form.userId" disabled />
       </el-form-item>
     </el-form>
 

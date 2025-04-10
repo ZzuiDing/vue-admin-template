@@ -13,7 +13,7 @@
       <el-row :gutter="20">
         <el-col v-for="(item, index) in hotGoods" :key="index" :span="6">
           <el-card shadow="hover" @click.native="goToProductDetail(item.id)">
-            <img :src="item.img" class="product-img">
+            <img :src="item.picture" class="product-img">
             <div class="product-info">
               <h3>{{ item.name }}</h3>
               <p class="price">¥{{ item.price }}</p>
@@ -23,7 +23,7 @@
       </el-row>
     </section>
 
-    <!-- 分类 -->
+    <!-- 商品分类 -->
     <section class="section">
       <h2 class="section-title">📦 商品分类</h2>
       <el-row :gutter="20">
@@ -57,5 +57,10 @@ export default {
 </script>
 
 <style scoped>
-/* 样式同之前主页样式 */
+.product-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
 </style>
