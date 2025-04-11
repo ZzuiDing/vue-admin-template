@@ -13,13 +13,14 @@ export function getOrderList() {
 
 /**
  * 新增订单
- * @param {Object} data 订单对象
+ * @param CartIds
+ * @param AddressId
  */
-export function addOrder(data) {
+export function addOrder(CartIds, AddressId) {
   return request({
-    url: '/spba-api/order/addOrder',
-    method: 'post',
-    data
+    url: `/spba-api/order/create?CartIds=${CartIds}&AddressId=${AddressId}`,
+    method: 'post'
+    // data
   })
 }
 

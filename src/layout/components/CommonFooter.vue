@@ -10,44 +10,45 @@
       :visible.sync="cartVisible"
       title="🛒 我的购物车"
       direction="rtl"
-      size="500px"
+      size="700px"
     >
       <div v-if="cartItems.length">
         <el-scrollbar height="400px">
-          <el-card
-            v-for="(item, index) in cartItems"
-            :key="item.id"
-            class="cart-item-card"
-          >
-            <div class="item">
-              <img :src="item.picture" class="item-img">
-              <div class="item-info">
-                <div class="item-name">{{ item.name }}</div>
-                <div class="item-meta">
-                  <span>单价：¥{{ item.price }}</span>
-                  <!-- 数量修改区域 -->
-                  <div class="quantity-control">
-                    <!--                    <el-button @click="updateQuantity(item, item.num - 1)" size="mini" :disabled="item.num <= 1">➖-->
-                    <!--                    </el-button>-->
-                    <el-input-number
-                      v-model="item.num"
-                      :min="1"
-                      size="mini"
-                      @change="(val) => updateQuantity(item)"
-                    />
-                    <!--                    <el-button @click="updateQuantity(item, item.num + 1)" size="mini">➕</el-button>-->
+          <el-checkbox-group v-model="selectedItemIds">
+            <el-card
+              v-for="(item, index) in cartItems"
+              :key="item.id"
+              class="cart-item-card"
+            >
+              <el-checkbox :label="item.id" class="cart-item-checkbox">
+                <div class="item">
+                  <img :src="item.picture" class="item-img">
+                  <div class="item-info">
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-meta">
+                      <span>单价：¥{{ item.price }}</span>
+                      <div class="quantity-control">
+                        <el-input-number
+                          v-model="item.num"
+                          :min="1"
+                          size="mini"
+                          @change="() => updateQuantity(item)"
+                        />
+                      </div>
+                    </div>
+                    <div class="item-total">小计：¥{{ item.price * item.num }}</div>
                   </div>
+                  <el-button
+                    type="danger"
+                    icon="el-icon-delete"
+                    size="mini"
+                    @click="deleteItem(item.id)"
+                  />
                 </div>
-                <div class="item-total">小计：¥{{ item.price * item.num }}</div>
-              </div>
-              <el-button
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-                @click="deleteItem(item.id)"
-              />
-            </div>
-          </el-card>
+              </el-checkbox>
+            </el-card>
+          </el-checkbox-group>
+
         </el-scrollbar>
 
         <!-- 底部区域 -->
@@ -74,22 +75,41 @@ export default {
   name: 'CommonFooter',
   data() {
     return {
-      cartVisible: false
+      cartVisible: false,
+      // cartItems: [],
+      selectedItemIds: []
     }
   },
   computed: {
     ...mapState('cart', ['cartItems']),
-    ...mapGetters('cart', ['totalAmount'])
+    ...mapGetters('cart', ['totalAmount']),
+    totalAmount() {
+      return this.cartItems
+        .filter(item => this.selectedItemIds.includes(item.id))
+        .reduce((sum, item) => sum + item.price * item.num, 0)
+    }
   },
   mounted() {
     this.fetchCart()
   },
   methods: {
     ...mapActions('cart', ['fetchCart', 'updateQuantity', 'deleteItem']),
+    // checkout() {
+    //   this.$router.push('/checkout')
+    //   // 后续可调用生成订单接口
+    // }
     checkout() {
-      this.$message.success('结算成功（这里只是示意，未实现后端处理）')
-      // 后续可调用生成订单接口
+      if (this.selectedItemIds.length === 0) {
+        return this.$message.warning('请先选择要结算的商品')
+      }
+      this.$router.push({
+        path: '/checkout',
+        query: {
+          ids: this.selectedItemIds.join(',')
+        }
+      })
     }
+
     // async updateQuantity(item, newNum) {
     //   if (newNum < 1) return
     //   try {

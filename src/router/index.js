@@ -25,9 +25,19 @@ export const constantRoutes = [
     props: true
   },
   {
+    path: '/checkout',
+    name: 'Checkout',
+    component: () => import('@/views/front/Checkout.vue')
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
+  },
+  {
+    path: '/orderSuccess',
+    component: () => import('@/views/front/OrderSuccess.vue'),
+    name: 'OrderSuccess'
   },
   {
     path: '/404',
@@ -76,6 +86,27 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/order',
+    name: '管理',
+    component: Layout,
+    redirect: '/order/index',
+    meta: { title: '订单管理', icon: 'form' }, // 只有用户角色可以访问
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/order/order.vue'),
+        meta: { title: '订单管理', icon: 'form' }
+      },
+      {
+        path: 'refund',
+        name: 'refund',
+        component: () => import('@/views/refund/refund.vue'),
+        meta: { title: '退款管理', icon: 'form' } // 只允许管理员角色访问
+      }
+    ]
+  },
+  {
     path: '/kind',
     component: Layout,
     children: [
@@ -119,27 +150,6 @@ export const asyncRoutes = [
         name: 'Form',
         component: () => import('@/views/address/address.vue'),
         meta: { title: '我的地址', icon: 'form', roles: 1 } // 只允许用户角色访问
-      }
-    ]
-  },
-  {
-    path: '/order',
-    name: '管理',
-    component: Layout,
-    redirect: '/order/index',
-    meta: { title: '订单管理', icon: 'form', roles: 2 }, // 只有用户角色可以访问
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/order/order.vue'),
-        meta: { title: '订单管理', icon: 'form', roles: 2 }
-      },
-      {
-        path: 'refund',
-        name: 'refund',
-        component: () => import('@/views/refund/refund.vue'),
-        meta: { title: '退款管理', icon: 'form', roles: 2 } // 只允许管理员角色访问
       }
     ]
   }
