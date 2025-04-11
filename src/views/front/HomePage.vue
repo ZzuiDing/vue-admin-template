@@ -12,7 +12,7 @@
       <h2 class="section-title">🔥 热门推荐</h2>
       <el-row :gutter="20">
         <el-col v-for="(item, index) in hotGoods" :key="index" :span="6">
-          <el-card shadow="hover" @click.native="goToProductDetail(item.id)">
+          <el-card shadow="hover" @click.native="$router.push({ name: 'ProductDetail', params: { id: item.id } })">
             <img :src="item.picture" class="product-img">
             <div class="product-info">
               <h3>{{ item.name }}</h3>

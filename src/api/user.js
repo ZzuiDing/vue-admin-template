@@ -37,7 +37,7 @@ export function getUserList() {
  * 新增用户
  * @param {Object} data 用户对象
  */
-export function addUser(data) {
+export function registerUser(data) {
   return request({
     url: '/spba-api/user/register',
     method: 'post',
@@ -49,7 +49,7 @@ export function addUser(data) {
  * 修改用户
  * @param {Object} data 用户对象（含 id）
  */
-export function updateUser(data) {
+export function updateUserInfo(data) {
   return request({
     url: '/spba-api/user/updateUser',
     method: 'post',

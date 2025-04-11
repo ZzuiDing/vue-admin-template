@@ -58,10 +58,10 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar, role } = data
+        const { name, image, role } = data
         // console.log('data', data)
         commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
+        commit('SET_AVATAR', image)
         commit('SET_ROLE', role)
         // console.log('role', role)
         // console.log('name', name)

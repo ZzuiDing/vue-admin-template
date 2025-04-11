@@ -1,98 +1,102 @@
 <template>
   <div class="mainpage">
-    <el-container>
+    <el-container direction="vertical">
       <!-- 顶部导航栏 -->
-      <el-header class="header">
-        <el-row type="flex" justify="space-between" align="middle">
-          <el-col :span="8" class="logo" @click.native="home">创作者购物平台</el-col>
+      <!--      <el-header class="header">-->
+      <!--        <el-row type="flex" justify="space-between" align="middle">-->
+      <!--          <el-col :span="8" class="logo" @click.native="home">创作者购物平台</el-col>-->
 
-          <el-col :span="8" class="search-container">
-            <el-input
-              v-model="searchQuery"
-              placeholder="搜索商品"
-              prefix-icon="el-icon-search"
-            />
-          </el-col>
+      <!--          <el-col :span="8" class="search-container">-->
+      <!--            <el-input-->
+      <!--              v-model="searchQuery"-->
+      <!--              placeholder="搜索商品"-->
+      <!--              prefix-icon="el-icon-search"-->
+      <!--            />-->
+      <!--          </el-col>-->
 
-          <el-col :span="8" class="user-container" style="text-align: right;">
-            <el-avatar
-              v-if="isLoggedIn"
-              :size="40"
-              :src="userAvatar"
-              class="user-avatar"
-              @click.native="backend"
-            />
-            <el-button
-              v-if="!isLoggedIn"
-              type="primary"
-              icon="el-icon-user"
-              size="small"
-              @click="login"
-            >
-              登录
-            </el-button>
-          </el-col>
-        </el-row>
-      </el-header>
-
+      <!--          <el-col :span="8" class="user-container" style="text-align: right;">-->
+      <!--            <el-avatar-->
+      <!--              v-if="isLoggedIn"-->
+      <!--              :size="40"-->
+      <!--              :src="userAvatar"-->
+      <!--              class="user-avatar"-->
+      <!--              @click.native="backend"-->
+      <!--            />-->
+      <!--            <el-button-->
+      <!--              v-if="!isLoggedIn"-->
+      <!--              type="primary"-->
+      <!--              icon="el-icon-user"-->
+      <!--              size="small"-->
+      <!--              @click="login"-->
+      <!--            >-->
+      <!--              登录-->
+      <!--            </el-button>-->
+      <!--          </el-col>-->
+      <!--        </el-row>-->
+      <!--      </el-header>-->
+      <CommonHeader
+        @goHome="home"
+        @login="login"
+        @backend="backend"
+      />
       <!-- 主页内容 -->
       <el-main>
         <!-- 动态组件显示 -->
-        <component
-          :is="currentPage"
+        <HomePage
           :banners="banners"
           :hot-goods="hotGoods"
           :categories="categories"
-          :product-id="currentProductId"
           @go-to-product-detail="goToProductDetail"
-          @go-to-home="home"
         />
       </el-main>
 
       <!-- 底部购物车 -->
-      <el-footer>
-        <!-- 浮动购物车按钮 -->
-        <el-button class="cart-button" type="primary" circle @click="cartVisible = true">
-          🛒
-        </el-button>
+      <!--      <el-footer>-->
+      <!--        &lt;!&ndash; 浮动购物车按钮 &ndash;&gt;-->
+      <!--        <el-button class="cart-button" type="primary" circle @click="cartVisible = true">-->
+      <!--          🛒-->
+      <!--        </el-button>-->
 
-        <!-- 购物车抽屉 -->
-        <el-drawer
-          :visible.sync="cartVisible"
-          title="🛒 我的购物车"
-          direction="rtl"
-          size="300px"
-        >
-          <div v-if="cartItems.length">
-            <el-card
-              v-for="(item, index) in cartItems"
-              :key="index"
-              style="margin-bottom: 10px;"
-            >
-              <div>{{ item.name }}</div>
-              <div class="price">¥{{ item.price }}</div>
-            </el-card>
-          </div>
-          <div v-else>
-            <p>购物车为空~</p>
-          </div>
-        </el-drawer>
-      </el-footer>
+      <!--        &lt;!&ndash; 购物车抽屉 &ndash;&gt;-->
+      <!--        <el-drawer-->
+      <!--          :visible.sync="cartVisible"-->
+      <!--          title="🛒 我的购物车"-->
+      <!--          direction="rtl"-->
+      <!--          size="300px"-->
+      <!--        >-->
+      <!--          <div v-if="cartItems.length">-->
+      <!--            <el-card-->
+      <!--              v-for="(item, index) in cartItems"-->
+      <!--              :key="index"-->
+      <!--              style="margin-bottom: 10px;"-->
+      <!--            >-->
+      <!--              <div>{{ item.name }}</div>-->
+      <!--              <div class="price">¥{{ item.price }}</div>-->
+      <!--            </el-card>-->
+      <!--          </div>-->
+      <!--          <div v-else>-->
+      <!--            <p>购物车为空~</p>-->
+      <!--          </div>-->
+      <!--        </el-drawer>-->
+      <!--      </el-footer>-->
+      <CommonFooter />
     </el-container>
   </div>
 </template>
 
 <script>
 import HomePage from './HomePage.vue'
-import ProductDetailPage from './ProductDetailPage.vue'
-import { getToken } from '@/utils/auth'
 import { topSoldGoods } from '@/api/good'
+import { getToken } from '@/utils/auth'
+import CommonHeader from '@/layout/components/CommonHeader.vue'
+import CommonFooter from '@/layout/components/CommonFooter.vue'
 
 export default {
   name: 'MainPage',
   components: {
-    HomePage: HomePage,
-    ProductDetailPage
+    CommonFooter,
+    CommonHeader,
+    HomePage: HomePage
   },
   data() {
     return {
@@ -113,9 +117,7 @@ export default {
       ],
       searchQuery: '', // 搜索框绑定的查询内容
       isLoggedIn: false, // 用户登录状态
-      userAvatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-      currentPage: 'HomePage', // 当前显示的页面组件
-      currentProductId: null
+      userAvatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
     }
   },
   mounted() {
@@ -146,16 +148,15 @@ export default {
       console.log('Avatar clicked, navigating to backend dashboard...')
       this.$router.push('/backend/dashboard')
     },
-    home() {
-      console.log('Home clicked, navigating to home page...')
-      this.currentPage = 'HomePage'
-      this.currentProductId = null
-    },
+    // 获取热销商品数据
     async fetchData() {
-      // 获取热销商品数据
       const response = await topSoldGoods()
       console.log('获取热销商品:', response)
       this.hotGoods = response.data.records
+    },
+    // 跳转到主页
+    home() {
+      this.$router.push('/')
     }
   }
 }
