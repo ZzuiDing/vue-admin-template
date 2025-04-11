@@ -41,6 +41,7 @@ export async function uploadToOSS(file) {
     body: formData
   })
 
+  console.log(uploadResponse)
   if (!uploadResponse.ok) {
     throw new Error('文件上传失败')
   }

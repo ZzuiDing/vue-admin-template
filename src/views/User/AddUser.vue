@@ -10,24 +10,23 @@
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="form.phone" placeholder="请输入手机号" />
       </el-form-item>
-      <el-form-item label="角色" prop="role">
+      <el-form-item v-if="$store.getters.role===2" label="角色" prop="role">
         <el-select v-model="form.role" placeholder="请选择角色">
           <el-option label="管理员" value="admin" />
           <el-option label="用户" value="user" />
         </el-select>
       </el-form-item>
       <el-form-item label="密码" prop="passwd">
-        <!-- 注意：type 为 password -->
         <el-input v-model="form.passwd" type="password" placeholder="请输入密码" />
       </el-form-item>
       <el-form-item label="头像">
         <el-upload
           class="avatar-uploader"
-          action="http://localhost:9090/spba-api/upload"
+          :http-request="handleUpload"
           :show-file-list="false"
-          :on-success="handleAvatarSuccess"
+          :before-upload="beforeUpload"
         >
-          <img v-if="form.avatar" :src="form.avatar" class="avatar" alt="">
+          <img v-if="form.image" :src="form.image" class="avatar" alt="">
           <i v-else class="el-icon-plus avatar-uploader-icon" />
         </el-upload>
       </el-form-item>
@@ -35,13 +34,14 @@
 
     <div style="text-align: right; margin-top: 10px;">
       <el-button type="primary" @click="handleSubmit">提交</el-button>
-      <el-button @click="$emit('closeDialog')">取消</el-button>
+      <el-button @click="closeDialog">取消</el-button>
     </div>
   </div>
 </template>
 
 <script>
 import { registerUser, updateUserInfo } from '@/api/user'
+import { uploadToOSS } from '@/api/file'
 
 export default {
   name: 'AddUser',
@@ -59,7 +59,7 @@ export default {
         email: '',
         phone: '',
         role: '',
-        avatar: '',
+        image: '',
         passwd: ''
       },
       rules: {
@@ -85,12 +85,8 @@ export default {
     }
   },
   methods: {
-    handleAvatarSuccess(res) {
-      // 假设上传成功后返回 { data: '图片地址' }
-      this.form.avatar = res.data
-    },
     async handleSubmit() {
-      this.$refs.formRef.validate(async valid => {
+      await this.$refs.formRef.validate(async valid => {
         if (!valid) return
 
         try {
@@ -110,6 +106,46 @@ export default {
           this.$message.error('提交出错，请重试')
         }
       })
+    },
+    async handleUpload(params) {
+      const file = params.file
+      try {
+        const url = await uploadToOSS(file)
+        console.log('上传成功:', url)
+        this.form.image = url
+        this.$message.success('上传成功')
+      } catch (error) {
+        console.error('上传失败:', error)
+        this.$message.error('上传失败，请重试')
+      }
+    },
+    beforeUpload(file) {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传图片格式只能是 JPG 或 PNG!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 2MB!')
+      }
+
+      return isJPG && isLt2M
+    },
+    resetForm() {
+      this.form = {
+        id: null,
+        name: '',
+        email: '',
+        phone: '',
+        role: '',
+        image: '',
+        passwd: ''
+      }
+    },
+    closeDialog() {
+      this.resetForm()
+      this.$emit('closeDialog')
     }
   }
 }
@@ -130,5 +166,32 @@ export default {
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
+}
+
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

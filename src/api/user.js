@@ -16,6 +16,13 @@ export function getInfo(token) {
   })
 }
 
+export function userinfo() {
+  return request({
+    url: 'http://localhost:9090/spba-api/user/getUserInfo',
+    method: 'get'
+  })
+}
+
 export function logout() {
   return request({
     url: 'http://localhost:9090/spba-api/user/logout',
@@ -51,7 +58,7 @@ export function registerUser(data) {
  */
 export function updateUserInfo(data) {
   return request({
-    url: '/spba-api/user/updateUser',
+    url: 'http://localhost:9090/spba-api/user/updateUserInfo',
     method: 'post',
     data
   })

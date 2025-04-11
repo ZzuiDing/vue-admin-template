@@ -73,18 +73,18 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: '管理', icon: 'form' }
-      }
-    ]
-  },
+  // {
+  //   path: '/form',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Form',
+  //       component: () => import('@/views/form/index'),
+  //       meta: { title: '管理', icon: 'form' }
+  //     }
+  //   ]
+  // },
   {
     path: '/order',
     name: '管理',
