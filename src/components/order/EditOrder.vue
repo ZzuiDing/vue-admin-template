@@ -1,44 +1,48 @@
 <template>
   <div>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="form" label-width="120px" :disabled="flag === 'buyer'">
       <el-form-item label="订单ID">
         <el-input v-model="form.id" :disabled="isEdit" />
       </el-form-item>
       <el-form-item label="买方">
-        <el-input v-model="form.buyer" />
+        <el-input v-model="form.buyer" disabled />
       </el-form-item>
       <el-form-item label="卖方">
-        <el-input v-model="form.seller" />
+        <el-input v-model="form.seller" disabled />
       </el-form-item>
       <el-form-item label="内容">
-        <el-input v-model="form.content" />
+        <el-input v-model="form.goodName" disabled />
       </el-form-item>
       <el-form-item label="购买数量">
-        <el-input-number v-model="form.amount" :min="1" />
+        <el-input-number v-model="form.amount" :min="1" disabled />
       </el-form-item>
-      <el-form-item label="日期">
+      <el-form-item label="描述">
+        <el-input v-model="form.desc" type="textarea" :rows="4" placeholder="请输入内容" disabled />
+      </el-form-item>
+      <el-form-item label="日期" disabled>
         <el-date-picker
           v-model="form.date"
+          disabled
           type="date"
           placeholder="选择日期"
           style="width: 100%;"
         />
       </el-form-item>
-      <el-form-item label="支付方式">
-        <el-select v-model="form.pay_method" placeholder="请选择支付方式">
+      <el-form-item label="支付方式" disabled>
+        <el-select v-model="form.payMethod" placeholder="请选择支付方式" disabled>
           <el-option label="支付宝" value="alipay" />
           <el-option label="微信" value="wechat" />
           <el-option label="银行转账" value="bank" />
         </el-select>
       </el-form-item>
-      <el-form-item label="支付金额">
-        <el-input-number v-model="form.pay_amount" :min="0" precision="2" />
+      <el-form-item label="支付金额" disabled>
+        <el-input-number v-model="form.payAmount" :min="0" :precision="2" disabled />
       </el-form-item>
-      <el-form-item label="快递号">
-        <el-input v-model="form.expres_id" />
+      <el-form-item label="快递号" disabled>
+        <el-input v-model="form.expressId" :disabled="!(flag === 'seller'&&status==='已支付')" />
       </el-form-item>
-      <el-form-item label="地址">
-        <el-input v-model="form.address" />
+      <el-form-item label="地址" disabled>
+        <el-input v-model="form.addressId" disabled />
       </el-form-item>
 
       <el-form-item>
@@ -58,6 +62,13 @@ export default {
     orderData: {
       type: Object,
       default: () => ({})
+    },
+    status: {
+      type: String,
+      default: ''
+    },
+    flag: {
+      type: String
     }
   },
   data() {
@@ -67,13 +78,14 @@ export default {
         buyer: '',
         seller: '',
         content: '',
+        goodName: '',
         amount: 1,
         date: '',
         status: '待处理',
-        pay_method: '',
-        pay_amount: 0,
-        expres_id: '',
-        address: ''
+        payMethod: '',
+        payAmount: 0,
+        expressId: '',
+        addressId: ''
       }
     }
   },
@@ -97,6 +109,9 @@ export default {
       }
     }
   },
+  mounted() {
+    console.log('flag', this.flag)
+  },
   methods: {
     resetForm() {
       this.form = {
@@ -107,10 +122,11 @@ export default {
         amount: 1,
         date: '',
         status: '待处理',
-        pay_method: '',
-        pay_amount: 0,
-        expres_id: '',
-        address: ''
+        payMethod: '',
+        payAmount: 0,
+        expressId: '',
+        addressId: '',
+        GoodName: ''
       }
     },
     async submitForm() {

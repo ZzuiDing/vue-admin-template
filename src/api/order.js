@@ -46,3 +46,114 @@ export function deleteOrderById(id) {
     method: 'post'
   })
 }
+
+/**
+ * 获取订单详情
+ * @param status
+ * @returns {*}
+ * @constructor
+ */
+export const getOrderListByStatus = (status) => {
+  return request({
+    url: `/spba-api/order/getOrderListByStatus?status=${status}`,
+    method: 'get'
+  })
+}
+
+// 获取买家订单列表
+export function getBuyerOrderList(pageNum = 1, pageSize = 10, buyerId) {
+  return request({
+    url: '/spba-api/order/getFromBuyer',
+    method: 'get',
+    params: {
+      pageNum,
+      pageSize,
+      BuyerId: buyerId
+    }
+  })
+}
+
+// 获取卖家订单列表
+export function getSellerOrderList(pageNum = 1, pageSize = 10, sellerId) {
+  return request({
+    url: '/spba-api/order/getFromSeller',
+    method: 'get',
+    params: {
+      pageNum,
+      pageSize,
+      SellerId: sellerId
+    }
+  })
+}
+
+// 更新订单描述
+export function updateOrderDesc(orderId, desc) {
+  return request({
+    url: '/spba-api/order/UpdateDesc',
+    method: 'get',
+    params: {
+      orderId,
+      desc
+    }
+  })
+}
+
+// 更新订单状态
+export function updateOrderStatus(orderId, status) {
+  return request({
+    url: '/spba-api/order/UpdateStatus',
+    method: 'get',
+    params: {
+      orderId,
+      status
+    }
+  })
+}
+
+// 删除订单（前提是“待支付”或“已取消”）
+export function deleteOrder(orderId) {
+  return request({
+    url: '/spba-api/order/delete',
+    method: 'get',
+    params: {
+      orderId
+    }
+  })
+}
+
+// 取消订单（仅限“待支付”状态）
+export function cancelOrder(orderId) {
+  return request({
+    url: '/spba-api/order/cancel',
+    method: 'get',
+    params: {
+      orderId
+    }
+  })
+}
+
+// 发货
+export function deliverOrder(orderId, expressId) {
+  return request({
+    url: '/spba-api/order/updateExpressId',
+    method: 'get',
+    params: {
+      orderId,
+      expressId
+    }
+  })
+}
+
+export function summary() {
+  return request({
+    url: '/spba-api/order/order/status-count',
+    method: 'get'
+  })
+}
+
+export function summarySeller() {
+  return request({
+    url: '/spba-api/order/order/status-countSeller',
+    method: 'get'
+  })
+}

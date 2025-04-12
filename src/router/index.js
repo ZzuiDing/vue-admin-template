@@ -57,7 +57,6 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
     path: '/GoodManagement',
     component: Layout,
@@ -85,27 +84,7 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  {
-    path: '/order',
-    name: '管理',
-    component: Layout,
-    redirect: '/order/index',
-    meta: { title: '订单管理', icon: 'form' }, // 只有用户角色可以访问
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/order/order.vue'),
-        meta: { title: '订单管理', icon: 'form' }
-      },
-      {
-        path: 'refund',
-        name: 'refund',
-        component: () => import('@/views/refund/refund.vue'),
-        meta: { title: '退款管理', icon: 'form' } // 只允许管理员角色访问
-      }
-    ]
-  },
+
   {
     path: '/kind',
     component: Layout,
@@ -117,8 +96,7 @@ export const constantRoutes = [
         meta: { title: '种类管理', icon: 'kind' }
       }
     ]
-  },
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
 /**
@@ -131,13 +109,13 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/UserManagement/dashboard',
     name: 'UserManagement',
-    meta: { title: '用户管理', icon: 'el-icon-s-help', roles: 2 }, // 只允许管理员角色访问
+    meta: { title: '用户管理', icon: 'el-icon-s-help', roles: [2] }, // 只允许管理员角色访问
     children: [
       {
         path: 'Dashboard',
         name: '用户浏览',
         component: () => import('@/views/User/UserManagement.vue'),
-        meta: { title: '用户管理', icon: 'tree', roles: 2 }
+        meta: { title: '用户管理', icon: 'tree', roles: [2] }
       }
     ]
   },
@@ -149,10 +127,90 @@ export const asyncRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/address/address.vue'),
-        meta: { title: '我的地址', icon: 'form', roles: 1 } // 只允许用户角色访问
+        meta: { title: '我的地址', icon: 'form', roles: [1] } // 只允许用户角色访问
       }
     ]
-  }
+  },
+  {
+    path: '/BuyerOrder',
+    name: 'BuyerOrder',
+    component: Layout,
+    redirect: '/BuyerOrder/pending',
+    meta: { title: '我买到的', icon: 'shopping-cart', roles: [1] },
+    children: [
+      {
+        path: 'pending',
+        name: 'BuyerPendingOrders',
+        component: () => import('@/views/order/PendingOrders.vue'),
+        meta: { title: '待支付', icon: 'form' }
+      },
+      {
+        path: 'paid',
+        name: 'BuyerPaidOrders',
+        component: () => import('@/views/order/PaidOrders.vue'),
+        meta: { title: '已支付（待发货）', icon: 'form' }
+      },
+      {
+        path: 'shipped',
+        name: 'BuyerShippedOrders',
+        component: () => import('@/views/order/ShippedOrders.vue'),
+        meta: { title: '已发货', icon: 'form' }
+      },
+      {
+        path: 'completed',
+        name: 'BuyerCompletedOrders',
+        component: () => import('@/views/order/CompleteOrders.vue'),
+        meta: { title: '已完成', icon: 'form' }
+      },
+      {
+        path: 'cancelled',
+        name: 'BuyerCancelledOrders',
+        component: () => import('@/views/order/CancelledOrders.vue'),
+        meta: { title: '已取消', icon: 'form' }
+      },
+      {
+        path: 'refund',
+        name: 'BuyerRefund',
+        component: () => import('@/views/refund/refund.vue'),
+        meta: { title: '退款管理', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/SellerOrder',
+    name: 'SellerOrder',
+    component: Layout,
+    redirect: '/SellerOrder/paid',
+    meta: { title: '我卖出的', icon: 'shopping-bag', roles: [1] },
+    children: [
+      {
+        path: 'paid',
+        name: 'SellerPaidOrders',
+        component: () => import('@/views/order/PaidOrders.vue'),
+        meta: { title: '已支付（待发货）', icon: 'form' }
+      },
+      {
+        path: 'shipped',
+        name: 'SellerShippedOrders',
+        component: () => import('@/views/order/ShippedOrders.vue'),
+        meta: { title: '已发货', icon: 'form' }
+      },
+      {
+        path: 'completed',
+        name: 'SellerCompletedOrders',
+        component: () => import('@/views/order/CompleteOrders.vue'),
+        meta: { title: '已完成', icon: 'form' }
+      },
+      {
+        path: 'refund',
+        name: 'SellerRefund',
+        component: () => import('@/views/refund/refund.vue'),
+        meta: { title: '退款管理', icon: 'form' }
+      }
+    ]
+  },
+  { path: '*', redirect: '/404', hidden: true, meta: { title: '404', icon: 'error', roles: [1, 2] }} // 404页面
+
 ]
 
 const createRouter = () => new Router({

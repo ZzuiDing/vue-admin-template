@@ -61,6 +61,9 @@
           <el-button type="success" @click="checkout">结算</el-button>
         </div>
       </div>
+      <div v-if="!this.$store.getters.token">
+        <p>请登陆后查看购物车</p>
+      </div>
       <div v-else>
         <p>购物车为空~</p>
       </div>
@@ -90,7 +93,9 @@ export default {
     }
   },
   mounted() {
-    this.fetchCart()
+    if (this.$store.getters.token) {
+      this.fetchCart()
+    }
   },
   methods: {
     ...mapActions('cart', ['fetchCart', 'updateQuantity', 'deleteItem']),

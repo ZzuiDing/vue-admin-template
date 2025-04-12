@@ -56,14 +56,14 @@
 </template>
 
 <script>
-import EditOrder from '@/views/order/editOrder.vue'
+import EditOrder from '@/components/order/EditOrder.vue'
 import {
   getOrderList,
   deleteOrderById
 } from '@/api/order'
 
 export default {
-  components: { EditOrder },
+  components: { EditOrder: EditOrder },
   data() {
     return {
       input: '',

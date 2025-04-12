@@ -40,6 +40,7 @@ const actions = {
         const { data } = response
         console.log('tokenValue', data.tokenValue)
         commit('SET_TOKEN', data.tokenValue)
+        console.log('commit token', data.tokenValue)
         setToken(data.tokenValue)
         resolve()
       }).catch(error => {

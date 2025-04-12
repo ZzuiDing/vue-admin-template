@@ -6,8 +6,8 @@ function hasPermission(roles, route) {
   if (route.meta && route.meta.roles) {
     console.log('Checking route.meta.roles:', route.meta.roles)
     console.log('User roles:', roles)
-    console.log('includes: ', route.meta.roles === roles)
-    return route.meta.roles === roles // 检查角色是否符合
+    console.log('includes: ', route.meta.roles.includes(roles))
+    return route.meta.roles.includes(roles) // 检查角色是否符合
   }
   return true
 }

@@ -6,7 +6,7 @@ import { getToken } from '@/utils/auth' // get token from cookie
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/'] // no redirect whitelist
+const whiteList = ['/login', '/', '/product'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   const hasToken = getToken()
@@ -54,7 +54,8 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     // 如果没有 token
-    if (whiteList.indexOf(to.path) !== -1) {
+    const isWhitelisted = whiteList.some(path => to.path === path || to.path.startsWith(path + '/'))
+    if (isWhitelisted) {
       // 如果当前路径在白名单中，允许访问
       next()
     } else {
