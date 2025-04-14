@@ -20,6 +20,7 @@
           <el-button v-if="status==='待支付'" size="mini" type="primary" @click="pay(scope.row.id)">支付</el-button>
           <el-button v-if="flag==='buyer'" size="mini" type="primary" @click="$emit('edit',scope.row)">查看</el-button>
           <el-button v-if="flag==='buyer' && status==='已发货'" size="mini" type="primary" @click="confirmOrder(scope.row.id)">确认签收</el-button>
+          <el-button v-if="flag==='buyer' && (status==='已支付'||status==='已完成')" size="mini" type="primary" @click="openRefundDialog(scope.row.id)">申请退款</el-button>
           <el-button
             v-if="flag==='seller' && status==='已支付'"
             size="mini"
@@ -27,6 +28,7 @@
             @click="openExpressDialog(scope.row)"
           >添加快递单号
           </el-button>
+          <el-button v-if="status==='待支付'&&flag==='buyer'" size="mini" type="danger" @click="cancel(scope.row.id)">取消订单</el-button>
 
         </template>
       </el-table-column>
@@ -42,12 +44,28 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog :visible.sync="RefundDialogVisible" title="申请退款" width="30%">
+      <el-form ref="form" :model="RefundForm" label-width="80px">
+        <el-form-item label="订单id">
+          <el-input v-model="RefundForm.orderId" disabled />
+        </el-form-item>
+        <el-form-item label="申请原因">
+          <el-input v-model="RefundForm.reason" type="textarea" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="RefundsubmitForm">提交</el-button>
+          <el-button @click="RefundDialogVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 
 </template>
 
 <script>
-import { deliverOrder, updateOrderStatus } from '@/api/order'
+import { cancelOrder, deliverOrder, updateOrderStatus } from '@/api/order'
+import { createRefund } from '@/api/refund'
 
 export default {
   name: 'OrderTable',
@@ -59,9 +77,14 @@ export default {
     return {
       flag: '',
       dialogVisible: false,
+      RefundDialogVisible: false,
       form: {
         expressId: '',
         id: null
+      },
+      RefundForm: {
+        orderId: '',
+        reason: ''
       }
     }
   },
@@ -70,10 +93,27 @@ export default {
     this.judgeSeller()
   },
   methods: {
+    async RefundsubmitForm() {
+      console.log('退款申请', this.RefundForm)
+      // this.$emit('RefundsubmitForm', this.RefundForm)
+      // console.log('退款申请', this.RefundForm)
+      const response = await createRefund(this.RefundForm)
+      if (response.code === 20000) {
+        this.$message.success('退款申请成功')
+        this.$emit('updateOrder', response.data)
+      } else {
+        this.$message.error(response.message)
+      }
+      this.RefundDialogVisible = false
+    },
     pay(id) {
       // console.log('支付', order)
       // this.$emit('pay', order)
       this.$router.push('/orderSuccess?orderId=' + id)
+    },
+    openRefundDialog(orderId) {
+      this.RefundForm.orderId = orderId
+      this.RefundDialogVisible = true
     },
     openExpressDialog(row) {
       this.form.id = row.id
@@ -88,6 +128,20 @@ export default {
         this.flag = 'buyer'
       } else {
         this.flag = 'admin'
+      }
+    },
+    async cancel(id) {
+      try {
+        const response = await cancelOrder(id)
+        if (response.code === 20000) {
+          this.$message.success('订单取消成功')
+          this.$emit('updateOrder', response.data)
+        } else {
+          this.$message.error(response.message)
+        }
+      } catch (err) {
+        console.error(err)
+        this.$message.error('failed')
       }
     },
     async submitForm() {

@@ -157,3 +157,11 @@ export function summarySeller() {
     method: 'get'
   })
 }
+
+// 获取订单详情
+export function getOrderDetail(orderId) {
+  return request({
+    url: '/spba-api/order/getOrderById?orderId=' + orderId,
+    method: 'get'
+  })
+}

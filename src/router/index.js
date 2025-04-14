@@ -209,6 +209,21 @@ export const asyncRoutes = [
       }
     ]
   },
+  // {
+  //   path: '/refund',
+  //   component: Layout,
+  //   redirect: '/refund/index',
+  //   name: 'Refund',
+  //   meta: { title: '退款管理', icon: 'el-icon-s-help', roles: [1] }, // 只允许用户角色访问
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: '退款浏览',
+  //       component: () => import('@/views/refund/refund.vue'),
+  //       meta: { title: '退款管理', icon: 'tree', roles: [1] }
+  //     }
+  //   ]
+  // },
   { path: '*', redirect: '/404', hidden: true, meta: { title: '404', icon: 'error', roles: [1, 2] }} // 404页面
 
 ]

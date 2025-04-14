@@ -1,7 +1,7 @@
 <!-- src/views/orders/PendingPayment.vue -->
 <template>
   <div>
-    <OrderTable :orders="filteredOrders" :status="'待支付'" @edit="handleEdit" />
+    <OrderTable :orders="filteredOrders" :status="'待支付'" @edit="handleEdit" @updateOrder="dealErs" />
     <el-dialog :visible.sync="dialogVisible" title="订单详情">
       <EditOrder :order-data="currentOrder" :flag="flag" @refreshTable="dealErs" @closeDialog="dialogVisible = false" />
     </el-dialog>
