@@ -77,3 +77,10 @@ export function getGoodById(id) {
     method: 'get'
   })
 }
+
+export function updateStatus(id) {
+  return request({
+    url: `/spba-api/goods/goodStatus?id=${id}`,
+    method: 'post'
+  })
+}

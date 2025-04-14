@@ -20,8 +20,11 @@
       <el-table-column prop="sold_amount" label="销量" min-width="180" />
       <el-table-column label="操作" min-width="200">
         <template #default="scope">
+          <el-button v-if="scope.row.status==='下架'" size="mini" type="primary" @click="activate(scope.row.id)">上架</el-button>
+          <el-button v-if="scope.row.status==='在售'" size="mini" type="primary" @click="activate(scope.row.id)">下架</el-button>
           <el-button size="mini" type="primary" @click="openEditDialog(scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="deleteGood(scope.row)">删除</el-button>
+
         </template>
       </el-table-column>
     </el-table>
@@ -46,7 +49,7 @@
 import AddGood from '@/views/Good/AddGood.vue'
 import store from '@/store'
 import { getAllKinds } from '@/api/kind'
-import { getAllGoods, getGoodsByUserId, deleteGoodById } from '@/api/good'
+import {getAllGoods, getGoodsByUserId, deleteGoodById, updateStatus} from '@/api/good'
 
 export default {
   components: { AddGood },
@@ -76,8 +79,18 @@ export default {
   mounted() {
     this.fetchKindList()
     this.fetchData()
+    console.log(this.tableData)
   },
   methods: {
+    async activate(id) {
+      const response = await updateStatus(id)
+      if (response.code === 20000) {
+        this.$message.success('修改成功')
+        await this.fetchData()
+      } else {
+        this.$message.error(response.message)
+      }
+    },
     async fetchKindList() {
       try {
         const response = await getAllKinds()

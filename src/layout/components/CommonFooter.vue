@@ -12,7 +12,7 @@
       direction="rtl"
       size="700px"
     >
-      <div v-if="cartItems.length">
+      <div v-if="cartItems.length&&this.$store.getters.token">
         <el-scrollbar height="400px">
           <el-checkbox-group v-model="selectedItemIds">
             <el-card
