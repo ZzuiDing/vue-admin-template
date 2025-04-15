@@ -73,28 +73,26 @@ export const getOrderListByStatus = (status) => {
 }
 
 // 获取买家订单列表
-export function getBuyerOrderList(pageNum = 1, pageSize = 10, buyerId) {
+export function getBuyerOrderList({ page, pageSize, status }) {
   return request({
     url: '/spba-api/order/getFromBuyer',
     method: 'get',
-    params: {
-      pageNum,
-      pageSize,
-      BuyerId: buyerId
-    }
+    params: { page, pageSize, status }
   })
 }
 
+// export function getBuyerOrderList({page, pageSize, status}) {
+//   return axios.get('/orders/buyer', {
+//     params: {page, pageSize, status}
+//   });
+// }
+
 // 获取卖家订单列表
-export function getSellerOrderList(pageNum = 1, pageSize = 10, sellerId) {
+export function getSellerOrderList({ page, pageSize, status }) {
   return request({
     url: '/spba-api/order/getFromSeller',
     method: 'get',
-    params: {
-      pageNum,
-      pageSize,
-      SellerId: sellerId
-    }
+    params: { page, pageSize, status }
   })
 }
 

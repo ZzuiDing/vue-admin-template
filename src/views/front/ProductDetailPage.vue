@@ -24,7 +24,7 @@
               <p class="description">{{ product.description }}</p>
 
               <!-- 评分组件 -->
-              <el-rate v-model="rating" disabled />
+              <el-rate v-model="product.rating" disabled />
 
               <!-- 数量选择 -->
               <div class="quantity-container">

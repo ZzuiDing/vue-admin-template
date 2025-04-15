@@ -10,11 +10,11 @@
 
     <el-table :data="tableData" style="width: 100%; margin-top: 10px;">
       <el-table-column prop="id" label="ID" min-width="60" />
-      <el-table-column prop="avatar" label="头像" min-width="120">
+      <el-table-column prop="image" label="头像" min-width="120">
         <template #default="scope">
           <el-image
             style="width: 60px; height: 60px"
-            :src="scope.row.avatar"
+            :src="scope.row.image"
             fit="cover"
           />
         </template>

@@ -1,7 +1,15 @@
 <!-- src/views/orders/PendingPayment.vue -->
 <template>
   <div>
-    <OrderTable :orders="filteredOrders" :status="'待支付'" @edit="handleEdit" @updateOrder="dealErs" />
+    <OrderTable :orders="orders" :status="'待支付'" @edit="handleEdit" @updateOrder="dealErs" />
+    <el-pagination
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :total="totalOrders"
+      layout="total, prev, pager, next, jumper"
+      class="mt-4"
+      @current-change="handlePageChange"
+    />
     <el-dialog :visible.sync="dialogVisible" title="订单详情">
       <EditOrder :order-data="currentOrder" :flag="flag" @refreshTable="dealErs" @closeDialog="dialogVisible = false" />
     </el-dialog>
@@ -21,18 +29,23 @@ export default {
       orders: [],
       currentOrder: null,
       dialogVisible: false,
-      flag: ''
+      flag: '',
+      totalOrders: 0,
+      currentPage: 1,
+      pageSize: 10,
+      status: '待支付'
     }
   },
   computed: {
-    filteredOrders() {
-      return this.orders.filter(order => order.status === '待支付')
-    }
   },
   mounted() {
     this.dealErs()
   },
   methods: {
+    handlePageChange(page) {
+      this.currentPage = page
+      this.dealErs()
+    },
     dealErs() {
       if (this.$route.path.includes('Buyer')) {
         this.fetchBuyerOrders()
@@ -60,9 +73,14 @@ export default {
     },
     async fetchBuyerOrders() {
       try {
-        const res = await getBuyerOrderList()
+        const res = await getBuyerOrderList({
+          page: this.currentPage,
+          pageSize: this.pageSize,
+          status: this.status
+        })
         if (res.code === 20000) {
           this.orders = res.data.records
+          this.totalOrders = res.data.total
         } else {
           this.$message.error('订单加载失败：' + res.message)
         }
@@ -73,9 +91,14 @@ export default {
     },
     async fetchSellerOrders() {
       try {
-        const res = await getSellerOrderList()
+        const res = await getSellerOrderList({
+          page: this.currentPage,
+          pageSize: this.pageSize,
+          status: this.status
+        })
         if (res.code === 20000) {
           this.orders = res.data.records
+          this.totalOrders = res.data.total
         } else {
           this.$message.error('订单加载失败：' + res.message)
         }

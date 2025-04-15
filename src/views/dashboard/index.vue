@@ -4,11 +4,11 @@
     <!--    <div class="dashboard-text">邮箱: {{ email }}</div>-->
     <div v-if="role === 1">
       <p v-if="summaryData['已发货'] && summaryData['已发货'].value !== undefined">
-        您出售的商品目前已发货订单数量：{{ summaryData['已发货'].value }},目前还有{{ summaryData['已支付'].value }}单未发出
+        您购买的商品目前已发货订单数量：{{ summaryData['已发货'].value }},目前还有{{ summaryData['已支付'].value }}单未发出
         已完成{{ summaryData['已完成'].value }}单订单，目前还有{{ summaryData['待支付'].value }}单待支付
       </p>
       <p v-if="summaryDataSeller['已发货'] && summaryDataSeller['已发货'].value !== undefined">
-        您购买的商品目前已发货订单数量：{{ summaryDataSeller['已发货'].value }},{{ summaryDataSeller['已支付'].value }}单未发出
+        您出售的商品目前已发货订单数量：{{ summaryDataSeller['已发货'].value }},{{ summaryDataSeller['已支付'].value }}单未发出
         已完成{{ summaryDataSeller['已完成'].value }}单订单，目前还有{{ summaryDataSeller['待支付'].value }}单待支付
       </p>
     </div>
