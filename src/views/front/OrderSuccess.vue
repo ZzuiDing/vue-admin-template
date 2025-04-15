@@ -16,6 +16,9 @@
         </div>
         <!-- 替换掉原来的 v-html -->
         <div ref="paymentContainer" />
+        <el-button type="primary" @click="goHome">返回首页</el-button>
+        <el-button type="primary" @click="login">登录</el-button>
+        <el-button type="primary" @click="backend">管理后台</el-button>
       </el-card>
     </el-main>
     <common-footer />

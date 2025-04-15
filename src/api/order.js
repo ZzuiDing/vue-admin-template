@@ -25,6 +25,18 @@ export function addOrder(CartIds, AddressId) {
 }
 
 /**
+ * 直接生成订单
+ */
+export function createOrder(goodId, amount, addressId) {
+  return request({
+    url: `/spba-api/order/createDirect?goodId=${goodId}&amount=${amount}&addressId=${addressId}`,
+    method: 'post',
+    goodId,
+    amount,
+    addressId
+  })
+}
+/**
  * 修改订单
  * @param {Object} data 订单对象（含 id）
  */

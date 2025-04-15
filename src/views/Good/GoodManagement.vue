@@ -49,7 +49,7 @@
 import AddGood from '@/views/Good/AddGood.vue'
 import store from '@/store'
 import { getAllKinds } from '@/api/kind'
-import {getAllGoods, getGoodsByUserId, deleteGoodById, updateStatus} from '@/api/good'
+import { getAllGoods, getGoodsByUserId, deleteGoodById, updateStatus } from '@/api/good'
 
 export default {
   components: { AddGood },

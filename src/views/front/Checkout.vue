@@ -45,11 +45,12 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import CommonHeader from '@/layout/components/CommonHeader.vue'
 import CommonFooter from '@/layout/components/CommonFooter.vue'
-import { addOrder } from '@/api/order'
+import { addOrder, createOrder } from '@/api/order'
 import AddressSelect from '@/layout/components/AddressSelect.vue'
+import { getGoodById } from '@/api/good'
 
 export default {
   name: 'CheckoutPage',
@@ -64,30 +65,70 @@ export default {
   },
   computed: {
     ...mapState('cart', ['cartItems']),
-    ...mapGetters('cart', ['totalAmount'])
+    // ...mapGetters('cart', ['totalAmount'])
+    totalAmount() {
+      return this.NewcartItems.reduce((sum, item) => {
+        return sum + item.price * item.num
+      }, 0)
+    }
   },
-  mounted() {
+  async mounted() {
+    const goodid = this.$route.query.id || ''
+    const goodnum = this.$route.query.num || ''
     const idStr = this.$route.query.ids || ''
-    this.selectedIds = idStr.split(',').map(id => parseInt(id))
-    console.log('选中的商品ID:', this.selectedIds)
-    // 拉取购物车数据后过滤只展示选中的
-    this.$store.dispatch('cart/fetchCart').then(() => {
-      this.NewcartItems = this.$store.state.cart.cartItems.filter(item =>
-        this.selectedIds.includes(item.id)
-      )
-    })
+    if (idStr) {
+      this.selectedIds = idStr.split(',').map(id => parseInt(id))
+      console.log('选中的商品ID:', this.selectedIds)
+      // 拉取购物车数据后过滤只展示选中的
+      this.$store.dispatch('cart/fetchCart').then(() => {
+        this.NewcartItems = this.$store.state.cart.cartItems.filter(item =>
+          this.selectedIds.includes(item.id)
+        )
+      })
+    } else if (goodid && goodnum) {
+      const res = await getGoodById(goodid)
+      if (res.code === 20000) {
+        this.NewcartItems = [{
+          id: res.data.id,
+          name: res.data.name,
+          price: res.data.price,
+          picture: res.data.picture,
+          num: parseInt(goodnum)
+        }]
+        console.log('商品信息:', this.NewcartItems)
+      } else {
+        this.$message.error('获取商品信息失败')
+      }
+    }
   },
   methods: {
     async submitOrder() {
-      try {
-        if (this.selectedIds.length === 0) {
-          return this.$message.warning('请先选择要结算的商品')
+      if (!this.currentAddress.id) {
+        return this.$message.warning('请先选择收货地址')
+      }
+      if (this.$route.query.ids) {
+        try {
+          if (this.selectedIds.length === 0) {
+            return this.$message.warning('请先选择要结算的商品')
+          }
+          console.log('提交订单:', this.selectedIds, this.currentAddress.id)
+          const res = await addOrder(this.selectedIds, this.currentAddress.id)
+          if (res.code === 20000) {
+            this.$message.success('订单提交成功')
+            this.$router.push({
+              path: 'orderSuccess',
+              query: {
+                orderId: res.data
+              }
+            }) // 可跳转到成功页
+          } else {
+            this.$message.error('提交失败')
+          }
+        } catch (e) {
+          this.$message.error('网络异常')
         }
-        if (!this.currentAddress.id) {
-          return this.$message.warning('请先选择收货地址')
-        }
-        console.log('提交订单:', this.selectedIds, this.currentAddress.id)
-        const res = await addOrder(this.selectedIds, this.currentAddress.id)
+      } else if (this.$route.query.id && this.$route.query.num) {
+        const res = await createOrder(String(this.$route.query.id), this.$route.query.num, this.currentAddress.id)
         if (res.code === 20000) {
           this.$message.success('订单提交成功')
           this.$router.push({
@@ -96,11 +137,7 @@ export default {
               orderId: res.data
             }
           }) // 可跳转到成功页
-        } else {
-          this.$message.error('提交失败')
         }
-      } catch (e) {
-        this.$message.error('网络异常')
       }
     },
     // selectAddress() {

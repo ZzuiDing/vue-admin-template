@@ -151,6 +151,7 @@ export default {
     },
     buyNow() {
       this.$message.success(`已开始购买 ${this.quantity} 件商品`)
+      this.$router.push(`/checkout?id=${this.product.id}&num=${this.quantity}`)
     },
     submitComment() {
       if (this.newComment.trim() === '') {
