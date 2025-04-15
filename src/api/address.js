@@ -4,10 +4,11 @@ import request from '@/utils/request'
 /**
  * 获取所有地址
  */
-export function getAllAddresses() {
+export function getAllAddresses(params) {
   return request({
     url: '/spba-api/address/getAddressListByUserId',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 

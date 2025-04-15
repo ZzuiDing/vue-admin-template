@@ -2,22 +2,26 @@
 import request from '@/utils/request'
 
 /**
- * 获取所有商品（管理员使用）
+ * 获取所有商品（管理员使用），支持分页
+ * @param {Object} params 分页参数 { pageNum, pageSize }
  */
-export function getAllGoods() {
+export function getAllGoods(params) {
   return request({
     url: '/spba-api/goods/ALLGoodsList',
-    method: 'get'
+    method: 'get',
+    params // 将分页参数传递给后端
   })
 }
 
 /**
- * 获取当前用户的商品（普通用户使用）
+ * 获取当前用户的商品（普通用户使用），支持分页
+ * @param {Object} params 分页参数 { pageNum, pageSize }
  */
-export function getGoodsByUserId() {
+export function getGoodsByUserId(params) {
   return request({
     url: '/spba-api/goods/GoodListByUserId',
-    method: 'get'
+    method: 'get',
+    params // 将分页参数传递给后端
   })
 }
 
@@ -78,6 +82,10 @@ export function getGoodById(id) {
   })
 }
 
+/**
+ * 更新商品的上架/下架状态
+ * @param {number} id 商品ID
+ */
 export function updateStatus(id) {
   return request({
     url: `/spba-api/goods/goodStatus?id=${id}`,

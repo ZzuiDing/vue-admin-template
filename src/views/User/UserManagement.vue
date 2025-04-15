@@ -55,15 +55,23 @@
         @refreshTable="fetchData"
       />
     </el-dialog>
+
+    <!-- 分页器 -->
+    <el-pagination
+      style="margin-top: 20px; text-align: center;"
+      background
+      layout="prev, pager, next"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :total="total"
+      @current-change="handlePageChange"
+    />
   </div>
 </template>
 
 <script>
 import AddUser from '@/views/User/AddUser.vue'
-import {
-  getUserList,
-  deleteUserById
-} from '@/api/user'
+import { getUserList, deleteUserById } from '@/api/user'
 
 export default {
   name: 'UserManagement',
@@ -73,7 +81,10 @@ export default {
       input: '',
       tableData: [],
       dialogFormVisible: false,
-      editUser: null
+      editUser: null,
+      currentPage: 1, // 当前页
+      pageSize: 10, // 每页显示条数
+      total: 0 // 数据总数
     }
   },
   watch: {
@@ -87,11 +98,16 @@ export default {
     this.fetchData()
   },
   methods: {
+    // 获取用户数据
     async fetchData() {
       try {
-        const res = await getUserList()
+        const res = await getUserList({
+          page: this.currentPage,
+          pageSize: this.pageSize
+        })
         if (res.code === 20000) {
-          this.tableData = res.data
+          this.tableData = res.data.records // 假设后端返回 { records, total }
+          this.total = res.data.total
         } else {
           this.$message.error('获取用户数据失败: ' + res.message)
         }
@@ -100,22 +116,29 @@ export default {
         this.$message.error('获取用户数据失败')
       }
     },
+    // 搜索功能
     handleSearch() {
       console.log('搜索用户名:', this.input)
       // TODO: 如果后端有搜索接口，可调用对应 API
+      this.currentPage = 1
+      this.fetchData()
     },
+    // 打开新增对话框
     openAddDialog() {
       this.editUser = null
       this.dialogFormVisible = true
     },
+    // 打开编辑对话框
     openEditDialog(user) {
       this.editUser = { ...user }
       this.dialogFormVisible = true
     },
+    // 关闭对话框
     dialogClosed() {
       this.dialogFormVisible = false
       this.editUser = null
     },
+    // 删除用户
     async deleteUser(user) {
       try {
         await this.$confirm('确定删除该用户吗?', '提示', {
@@ -136,6 +159,11 @@ export default {
           this.$message.error('删除失败: ' + (err.message || '服务器错误'))
         }
       }
+    },
+    // 分页切换
+    handlePageChange(page) {
+      this.currentPage = page
+      this.fetchData()
     }
   }
 }

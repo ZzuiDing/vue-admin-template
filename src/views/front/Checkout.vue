@@ -162,7 +162,7 @@ export default {
       this.$router.push('/login')
     },
     backend() {
-      this.$router.push('/backend')
+      this.$router.push('/backend/dashboard')
     }
   }
 }

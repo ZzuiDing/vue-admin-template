@@ -8,11 +8,12 @@ export function createRefund(data) {
   })
 }
 
-export function getBuyerRefund(params) {
+// 获取买家的退款列表（带分页）
+export function getBuyerRefund({ page, size, keyword = '' } = {}) {
   return request({
     url: '/spba-api/refund/getRefundListByBuyerId',
     method: 'get',
-    params
+    params: { page, size, keyword }
   })
 }
 
@@ -23,11 +24,12 @@ export function cancelRefund(refundId) {
   })
 }
 
-export function getSellerRefund(params) {
+// 获取卖家的退款列表（带分页）
+export function getSellerRefund({ page, size, keyword = '' } = {}) {
   return request({
     url: '/spba-api/refund/getRefundListBySellerId',
     method: 'get',
-    params
+    params: { page, size, keyword }
   })
 }
 

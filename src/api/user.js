@@ -33,10 +33,11 @@ export function logout() {
 /**
  * 获取用户列表
  */
-export function getUserList() {
+export function getUserList(params) {
   return request({
     url: '/spba-api/user/getUserList',
-    method: 'get'
+    method: 'get',
+    params: params // 传递分页参数
   })
 }
 

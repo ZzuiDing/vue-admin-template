@@ -66,12 +66,33 @@
           />
           <el-button type="success" class="submit-comment-button" @click="submitComment">提交评论</el-button>
 
-          <!-- 评论列表 -->
-          <div v-for="(review, index) in reviews" :key="index" class="review-item">
-            <p><strong>{{ review.username }}</strong> (评分: {{ review.rating }})</p>
-            <p>{{ review.comment }}</p>
-            <p class="review-time">{{ review.time }}</p>
+          <!-- 评论区展示 -->
+          <div
+            v-for="review in comments"
+            :key="review.id"
+            class="review-item"
+            style="margin-bottom: 20px; display: flex; align-items: flex-start;"
+          >
+            <el-avatar :src="review.userAvatar" size="large" style="margin-right: 12px;" />
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong>{{ review.userName }}</strong>
+                <el-rate :value="review.stars" disabled show-score text-color="#ff9900" score-template="{value} 星" />
+              </div>
+              <p style="margin-top: 6px;">{{ review.desc }}</p>
+            </div>
           </div>
+
+          <!-- 分页组件 -->
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            :total="totalComments"
+            @current-change="handlePageChange"
+          />
+
         </div>
       </el-main>
     </div>
@@ -86,6 +107,7 @@ import { getGoodById } from '@/api/good'
 import CommonHeader from '@/layout/components/CommonHeader.vue'
 import CommonFooter from '@/layout/components/CommonFooter.vue'
 import { addToCart } from '@/api/shoppingCart'
+import { addComment, getCommentsByGoodId } from '@/api/domment'
 
 export default {
   name: 'ProductDetailPage',
@@ -111,13 +133,55 @@ export default {
       ShoppingCart: {
         goodId: '',
         num: 1
-      }
+      },
+      comments: [],
+      totalComments: 0,
+      currentPage: 1,
+      pageSize: 5,
+      productId: null
     }
   },
   mounted() {
     this.fetchProductDetails()
+    this.productId = this.$route.params.id
+    // this.fetchProductDetails()
+    this.fetchComments()
   },
   methods: {
+    handlePageChange(page) {
+      this.currentPage = page
+      this.fetchComments()
+    },
+    async fetchComments() {
+      const res = await getCommentsByGoodId(this.productId, this.currentPage, this.pageSize)
+      if (res.code === 20000) {
+        this.comments = res.data.records
+        this.totalComments = res.data.total
+      }
+    },
+    async submitComment() {
+      if (this.newComment.trim() === '') {
+        this.$message.warning('评论不能为空')
+        return
+      }
+
+      const comment = {
+        goodId: this.productId,
+        username: '当前用户', // 实际应从后端或token中获取
+        desc: this.newComment,
+        stars: this.rating
+      }
+
+      const res = await addComment(comment)
+      if (res.code === 20000) {
+        this.$message.success('评论提交成功')
+        this.newComment = ''
+        this.rating = 5
+        await this.fetchComments()
+      } else {
+        this.$message.error('评论提交失败')
+      }
+    },
     goHome() {
       this.$router.push('/')
     },
@@ -153,22 +217,22 @@ export default {
       this.$message.success(`已开始购买 ${this.quantity} 件商品`)
       this.$router.push(`/checkout?id=${this.product.id}&num=${this.quantity}`)
     },
-    submitComment() {
-      if (this.newComment.trim() === '') {
-        this.$message.warning('评论不能为空')
-        return
-      }
-      const newReview = {
-        username: '当前用户',
-        rating: this.rating,
-        comment: this.newComment,
-        time: new Date().toLocaleString()
-      }
-      this.reviews.push(newReview)
-      this.newComment = ''
-      this.rating = 5
-      this.$message.success('评论提交成功')
-    },
+    // submitComment() {
+    //   if (this.newComment.trim() === '') {
+    //     this.$message.warning('评论不能为空')
+    //     return
+    //   }
+    //   const newReview = {
+    //     username: '当前用户',
+    //     rating: this.rating,
+    //     comment: this.newComment,
+    //     time: new Date().toLocaleString()
+    //   }
+    //   this.reviews.push(newReview)
+    //   this.newComment = ''
+    //   this.rating = 5
+    //   this.$message.success('评论提交成功')
+    // },
     async fetchProductDetails() {
       try {
         const response = await getGoodById(this.$router.currentRoute.params.id)

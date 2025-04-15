@@ -13,49 +13,69 @@
           >{{ scope.row.orderId }}
           </el-button>
         </template>
-        <!--        <el-button>点击查看订单</el-button>-->
       </el-table-column>
-      <!--      <el-table-column prop="userId" label="用户ID" min-width="100" />-->
       <el-table-column prop="reason" label="退款原因" min-width="180" />
-      <!--      <el-table-column prop="amount" label="退款金额" min-width="100" />-->
       <el-table-column prop="status" label="状态" min-width="100" />
       <el-table-column prop="express" label="快递单号" min-width="100" />
       <el-table-column label="操作" min-width="180">
         <template #default="scope">
           <el-button
-            v-if="scope.row.status === '申请中'&&flag === 'seller'"
+            v-if="scope.row.status === '申请中' && flag === 'seller'"
             size="mini"
             type="success"
             @click="openHandleDialog(scope.row)"
           >处理
           </el-button>
           <el-button
-            v-if="scope.row.status === '申请中'&&flag === 'seller'"
+            v-if="scope.row.status === '申请中' && flag === 'seller'"
             size="mini"
             type="primary"
             @click="accept(scope.row.id)"
           >通过申请
           </el-button>
           <el-button
-            v-if="scope.row.status === '申请中'&&flag === 'seller'"
+            v-if="scope.row.status === '申请中' && flag === 'seller'"
             size="mini"
             type="primary"
             @click="decline(scope.row.id)"
           >拒绝申请
           </el-button>
           <el-button
-            v-if="scope.row.status === '申请中'&&flag === 'buyer'"
+            v-if="scope.row.status === '申请中' && flag === 'buyer'"
             size="mini"
             type="success"
             @click="openHandleDialog(scope.row)"
           >查看
           </el-button>
-          <el-button v-if="scope.row.status ==='申请中'" size="mini" type="danger" @click="cancel(scope.row.id)">取消</el-button>
-          <el-button v-if="(scope.row.status ==='处理中'&&flag==='buyer')&&scope.row.express===''" size="mini" type="primary" @click="openExpressDialog(scope.row)">添加快递单号</el-button>
-          <el-button v-if="scope.row.status ==='处理中'&&flag==='seller'&&scope.row.express!==''" size="mini" type="danger" @click="commit(scope.row.id)">确认退款</el-button>
+          <el-button v-if="scope.row.status === '申请中'" size="mini" type="danger" @click="cancel(scope.row.id)">取消
+          </el-button>
+          <el-button
+            v-if="(scope.row.status === '处理中' && flag === 'buyer') && scope.row.express === ''"
+            size="mini"
+            type="primary"
+            @click="openExpressDialog(scope.row)"
+          >添加快递单号
+          </el-button>
+          <el-button
+            v-if="scope.row.status === '处理中' && flag === 'seller' && scope.row.express !== ''"
+            size="mini"
+            type="danger"
+            @click="commit(scope.row.id)"
+          >确认退款
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页组件 -->
+    <el-pagination
+      v-if="totalRecords > pageSize"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :total="totalRecords"
+      layout="total, prev, pager, next, jumper"
+      @current-change="handlePageChange"
+    />
 
     <el-dialog :visible.sync="dialogVisible" title="处理退款" width="50%" @close="closeDialog">
       <RefundForm
@@ -77,7 +97,7 @@
           <el-input v-model="form.express" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitExpress(form.id,form.express)">提交</el-button>
+          <el-button type="primary" @click="submitExpress(form.id, form.express)">提交</el-button>
           <el-button @click="ExpressdialogVisible = false">取消</el-button>
         </el-form-item>
       </el-form>
@@ -106,7 +126,10 @@ export default {
       form: {
         express: '',
         id: null
-      }
+      },
+      totalRecords: 0, // 总记录数
+      currentPage: 1, // 当前页
+      pageSize: 10 // 每页显示的数量
     }
   },
   mounted() {
@@ -134,7 +157,7 @@ export default {
     },
     openExpressDialog(row) {
       this.form.id = row.id
-      this.form.expresId = row.expresId || ''
+      this.form.expressId = row.expressId || ''
       this.ExpressdialogVisible = true
     },
     accept(id) {
@@ -151,7 +174,8 @@ export default {
             this.$message.error(res.message || '处理失败')
           }
         })
-      }).catch(() => {})
+      }).catch(() => {
+      })
     },
     cancel(id) {
       this.$confirm('确定取消该退款吗？', '提示', {
@@ -167,7 +191,8 @@ export default {
             this.$message.error(res.message || '取消失败')
           }
         })
-      }).catch(() => {})
+      }).catch(() => {
+      })
     },
     dealErs() {
       if (this.$route.path.includes('Buyer')) {
@@ -194,9 +219,11 @@ export default {
     },
     async fetchBuyerRefunds() {
       try {
-        const res = await getBuyerRefund()
+        const res = await getBuyerRefund({ page: this.currentPage, size: this.pageSize })
         if (res.code === 20000) {
-          this.tableData = res.data
+          this.tableData = res.data.records
+          this.totalRecords = res.data.total // 总记录数
+          console.log('totalRecords', this.totalRecords)
         } else {
           this.$message.error(res.message || '获取退款数据失败')
         }
@@ -207,9 +234,10 @@ export default {
     },
     async fetchSellerRefunds() {
       try {
-        const res = await getSellerRefund()
+        const res = await getSellerRefund({ page: this.currentPage, size: this.pageSize })
         if (res.code === 20000) {
-          this.tableData = res.data
+          this.tableData = res.data.records
+          this.totalRecords = res.data.total // 总记录数
         } else {
           this.$message.error(res.message || '获取退款数据失败')
         }
@@ -242,7 +270,7 @@ export default {
         const res = 'await deleteRefundById(row.id)'
         if (res.code === 20000) {
           this.$message.success('删除成功')
-          this.fetchBuyerRefunds()
+          await this.fetchBuyerRefunds()
         } else {
           this.$message.error(res.message)
         }
@@ -251,6 +279,12 @@ export default {
           this.$message.error('删除失败')
         }
       }
+    },
+    handlePageChange(page) {
+      this.currentPage = page
+      console.log('当前页:', this.currentPage)
+      console.log('actual page:', page)
+      this.dealErs() // 重新加载分页数据
     }
   }
 }

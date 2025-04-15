@@ -20,14 +20,28 @@
       <el-table-column prop="sold_amount" label="销量" min-width="180" />
       <el-table-column label="操作" min-width="200">
         <template #default="scope">
-          <el-button v-if="scope.row.status==='下架'" size="mini" type="primary" @click="activate(scope.row.id)">上架</el-button>
-          <el-button v-if="scope.row.status==='在售'" size="mini" type="primary" @click="activate(scope.row.id)">下架</el-button>
+          <el-button v-if="scope.row.status === '下架'" size="mini" type="primary" @click="activate(scope.row.id)">
+            上架
+          </el-button>
+          <el-button v-if="scope.row.status === '在售'" size="mini" type="primary" @click="activate(scope.row.id)">
+            下架
+          </el-button>
           <el-button size="mini" type="primary" @click="openEditDialog(scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="deleteGood(scope.row)">删除</el-button>
-
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页 -->
+    <el-pagination
+      v-if="total > 0"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :total="total"
+      layout="total, sizes, prev, pager, next, jumper"
+      @current-change="handlePageChange"
+      @size-change="handleSizeChange"
+    />
 
     <!-- 弹窗：新增/编辑商品 -->
     <el-dialog
@@ -59,7 +73,10 @@ export default {
       tableData: [],
       dialogFormVisible: false,
       editGood: null,
-      kindList: []
+      kindList: [],
+      currentPage: 1, // 当前页码
+      pageSize: 10, // 每页显示的条数
+      total: 0 // 总记录数
     }
   },
   watch: {
@@ -79,9 +96,9 @@ export default {
   mounted() {
     this.fetchKindList()
     this.fetchData()
-    console.log(this.tableData)
   },
   methods: {
+    // 激活商品上架/下架
     async activate(id) {
       const response = await updateStatus(id)
       if (response.code === 20000) {
@@ -91,6 +108,8 @@ export default {
         this.$message.error(response.message)
       }
     },
+
+    // 获取商品分类
     async fetchKindList() {
       try {
         const response = await getAllKinds()
@@ -104,17 +123,24 @@ export default {
         this.$message.error('获取种类数据失败')
       }
     },
+
+    // 获取商品列表
     async fetchData() {
       try {
         let response
         if (store.getters.role !== 1) {
-          response = await getAllGoods()
+          response = await getAllGoods({
+            pageNum: this.currentPage,
+            pageSize: this.pageSize
+          })
         } else {
-          response = await getGoodsByUserId()
+          response = await getGoodsByUserId({
+            pageNum: this.currentPage,
+            pageSize: this.pageSize
+          })
         }
 
         const goods = response.data.records
-
         goods.forEach(good => {
           const kind = this.kindList.find(k => k.id === good.kindId)
           if (kind) {
@@ -123,27 +149,38 @@ export default {
         })
 
         this.tableData = goods
+        this.total = response.data.total // 获取总记录数
       } catch (error) {
         console.error('获取商品数据失败:', error)
         this.$message.error('获取商品数据失败')
       }
     },
+
+    // 搜索功能
     handleSearch() {
       console.log('搜索:', this.input)
       // 可加入模糊搜索逻辑，例如过滤 this.tableData
     },
+
+    // 打开新增商品弹窗
     openAddDialog() {
       this.editGood = null
       this.dialogFormVisible = true
     },
+
+    // 打开编辑商品弹窗
     openEditDialog(good) {
       this.editGood = { ...good }
       this.dialogFormVisible = true
     },
+
+    // 关闭弹窗
     dialogClosed() {
       this.editGood = null
       this.dialogFormVisible = false
     },
+
+    // 删除商品
     async deleteGood(row) {
       try {
         await this.$confirm('确定删除该商品吗?', '提示', {
@@ -165,6 +202,19 @@ export default {
           this.$message.error(`删除失败: ${error.message || '服务器错误'}`)
         }
       }
+    },
+
+    // 分页改变时的处理
+    handlePageChange(page) {
+      this.currentPage = page
+      this.fetchData()
+    },
+
+    // 每页条数改变时的处理
+    handleSizeChange(size) {
+      this.pageSize = size
+      this.currentPage = 1
+      this.fetchData()
     }
   }
 }

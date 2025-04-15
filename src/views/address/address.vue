@@ -17,22 +17,24 @@
       <el-table-column prop="userId" label="用户ID" width="100" />
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleEdit(scope.row)"
-          >修改
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            style="margin-left: 10px;"
-            @click="handleDelete(scope.row)"
-          >删除
+          <el-button size="mini" type="primary" @click="handleEdit(scope.row)">修改</el-button>
+          <el-button size="mini" type="danger" style="margin-left: 10px;" @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <el-pagination
+      style="margin-top: 20px; text-align: right;"
+      background
+      layout="total, sizes, prev, pager, next, jumper"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :page-sizes="[5, 10, 20, 50]"
+      :total="total"
+      @current-change="handlePageChange"
+      @size-change="handleSizeChange"
+    />
 
     <el-dialog
       :visible.sync="dialogFormVisible"
@@ -51,10 +53,7 @@
 
 <script>
 import EditAddress from '@/views/address/addressManagement.vue'
-import {
-  getAllAddresses,
-  deleteAddressById
-} from '@/api/address'
+import { getAllAddresses, deleteAddressById } from '@/api/address'
 
 export default {
   name: 'AddressManagement',
@@ -64,7 +63,10 @@ export default {
       input: '',
       tableData: [],
       dialogFormVisible: false,
-      selectedAddress: null
+      selectedAddress: null,
+      currentPage: 1,
+      pageSize: 5,
+      total: 0
     }
   },
   mounted() {
@@ -73,12 +75,15 @@ export default {
   methods: {
     async fetchData() {
       try {
-        const res = await getAllAddresses()
+        const params = {
+          pageNum: this.currentPage,
+          pageSize: this.pageSize,
+          keyword: this.input // 若后端支持关键词搜索
+        }
+        const res = await getAllAddresses(params)
         if (res.code === 20000) {
-          // 如果后端返回 data.records
           this.tableData = res.data.records
-            ? res.data.records.sort((a, b) => a.id - b.id)
-            : res.data.sort((a, b) => a.id - b.id)
+          this.total = res.data.total
         } else {
           this.$message.error('获取地址数据失败：' + res.message)
         }
@@ -88,8 +93,8 @@ export default {
       }
     },
     handleSearch() {
-      console.log('搜索关键词:', this.input)
-      // TODO: 如果有搜索接口，可在这里调用
+      this.currentPage = 1
+      this.fetchData()
     },
     openAddDialog() {
       this.selectedAddress = {}
@@ -123,6 +128,15 @@ export default {
           this.$message.error('删除失败：' + (err.message || '未知错误'))
         }
       }
+    },
+    handlePageChange(page) {
+      this.currentPage = page
+      this.fetchData()
+    },
+    handleSizeChange(size) {
+      this.pageSize = size
+      this.currentPage = 1
+      this.fetchData()
     }
   }
 }

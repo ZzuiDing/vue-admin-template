@@ -30,6 +30,16 @@
       </el-table-column>
     </el-table>
 
+    <!-- 分页 -->
+    <el-pagination
+      v-show="total > 0"
+      :current-page="pageNum"
+      :page-size="pageSize"
+      :total="total"
+      layout="total, prev, pager, next, jumper"
+      @current-change="handlePageChange"
+    />
+
     <!-- 弹窗：新增/编辑种类 -->
     <el-dialog
       :visible.sync="dialogFormVisible"
@@ -60,19 +70,28 @@ export default {
       input: '',
       tableData: [],
       dialogFormVisible: false,
-      selectedKind: null
+      selectedKind: null,
+      pageNum: 1, // 当前页
+      pageSize: 10, // 每页显示的记录数
+      total: 0 // 总记录数
     }
   },
   mounted() {
     this.fetchData()
   },
   methods: {
+    // 获取数据
     async fetchData() {
+      const params = {
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+        keyword: this.input // 如果有搜索关键字
+      }
       try {
-        const res = await getAllKinds()
+        const res = await getAllKinds(params)
         if (res.code === 20000) {
-          // 按 id 升序排列
-          this.tableData = res.data.records.sort((a, b) => a.id - b.id)
+          this.tableData = res.data.records
+          this.total = res.data.total // 总记录数
         } else {
           this.$message.error('获取种类数据失败：' + res.message)
         }
@@ -83,7 +102,8 @@ export default {
     },
     handleSearch() {
       console.log('搜索:', this.input)
-      // TODO: 如果有搜索接口，可在此调用
+      // 调用 fetchData 方法，传递搜索参数
+      this.fetchData()
     },
     openAddDialog() {
       this.selectedKind = null
@@ -118,6 +138,11 @@ export default {
           this.$message.error('删除失败：' + (err.message || '未知错误'))
         }
       }
+    },
+    // 分页改变时触发
+    handlePageChange(page) {
+      this.pageNum = page
+      this.fetchData()
     }
   }
 }
