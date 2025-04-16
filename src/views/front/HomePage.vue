@@ -23,6 +23,22 @@
       </el-row>
     </section>
 
+    <!-- 热门商品 -->
+    <section class="section">
+      <h2 class="section-title">🔥 最新出新</h2>
+      <el-row :gutter="20">
+        <el-col v-for="(item, index) in newestGoods" :key="index" :span="6">
+          <el-card shadow="hover" @click.native="$router.push({ name: 'ProductDetail', params: { id: item.id } })">
+            <img :src="item.picture" class="product-img">
+            <div class="product-info">
+              <h3>{{ item.name }}</h3>
+              <p class="price">¥{{ item.price }}</p>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </section>
+
     <!-- 商品分类 -->
     <section class="section">
       <h2 class="section-title">📦 商品分类</h2>
@@ -44,6 +60,7 @@ export default {
   props: {
     banners: Array,
     hotGoods: Array,
+    newestGoods: Array,
     categories: Array
   },
   methods: {

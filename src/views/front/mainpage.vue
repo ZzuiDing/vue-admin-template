@@ -86,7 +86,7 @@
 
 <script>
 import HomePage from './HomePage.vue'
-import { topSoldGoods } from '@/api/good'
+import {newestGoods, topSoldGoods} from '@/api/good'
 import { getToken } from '@/utils/auth'
 import CommonHeader from '@/layout/components/CommonHeader.vue'
 import CommonFooter from '@/layout/components/CommonFooter.vue'
@@ -105,6 +105,7 @@ export default {
         'https://cdn.pixabay.com/photo/2016/03/09/09/17/store-1245754_960_720.jpg'
       ],
       hotGoods: [],
+      newestGoods: [],
       categories: [
         { title: '数码家电', desc: '最新潮流的电子产品等你来选购' },
         { title: '服饰美妆', desc: '时尚穿搭与护肤新品应有尽有' },
@@ -152,7 +153,18 @@ export default {
     async fetchData() {
       const response = await topSoldGoods()
       console.log('获取热销商品:', response)
+      if (response.code !== 20000) {
+        this.$message.error('获取热销商品失败')
+        return
+      }
       this.hotGoods = response.data.records
+      const res = await newestGoods()
+      console.log('获取最新商品:', res)
+      if (res.code !== 20000) {
+        this.$message.error('获取最新商品失败')
+        return
+      }
+      this.newestGoods = res.data.records
     },
     // 跳转到主页
     home() {

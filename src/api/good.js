@@ -71,6 +71,18 @@ export function topSoldGoods() {
   })
 }
 
+
+/**
+ * 获取最新商品
+ * @returns {Promise} 热销商品列表
+ */
+export function newestGoods() {
+  return request({
+    url: '/spba-api/goods/newestGoods',
+    method: 'get'
+  })
+}
+
 /**
  * 获取商品详情
  * @param {number} id 商品ID
