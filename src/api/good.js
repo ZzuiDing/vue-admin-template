@@ -71,7 +71,6 @@ export function topSoldGoods() {
   })
 }
 
-
 /**
  * 获取最新商品
  * @returns {Promise} 热销商品列表

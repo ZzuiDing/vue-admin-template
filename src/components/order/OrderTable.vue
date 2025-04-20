@@ -15,20 +15,20 @@
       <el-table-column v-if="status!=='待支付'" prop="addressId" label="地址" />
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button v-if="status!=='待支付'&&flag==='seller'" size="mini" type="primary" @click="$emit('edit', scope.row)">编辑</el-button>
+          <el-button v-if="(scope.row.status!=='待支付'&&scope.row.status!=='已取消')&&(flag==='seller'||flag==='admin')" size="mini" type="primary" @click="$emit('edit', scope.row)">编辑</el-button>
           <!--          <el-button size="mini" type="primary" @click="$router.push(`/orderSuccess?orderId=${scope.row.id}`)">支付</el-button>-->
           <el-button v-if="status==='待支付'" size="mini" type="primary" @click="pay(scope.row.id)">支付</el-button>
           <el-button v-if="flag==='buyer'" size="mini" type="primary" @click="$emit('edit',scope.row)">查看</el-button>
-          <el-button v-if="flag==='buyer' && status==='已发货'" size="mini" type="primary" @click="confirmOrder(scope.row.id)">确认签收</el-button>
-          <el-button v-if="flag==='buyer' && (status==='已支付'||status==='已完成')" size="mini" type="primary" @click="openRefundDialog(scope.row.id)">申请退款</el-button>
+          <el-button v-if="flag==='buyer' && scope.row.status==='已发货'" size="mini" type="primary" @click="confirmOrder(scope.row.id)">确认签收</el-button>
+          <el-button v-if="flag==='buyer' && (scope.row.status==='已支付'||scope.row.status==='已完成')" size="mini" type="primary" @click="openRefundDialog(scope.row.id)">申请退款</el-button>
           <el-button
-            v-if="flag==='seller' && status==='已支付'"
+            v-if="flag==='seller' && scope.row.status==='已支付'"
             size="mini"
             type="primary"
             @click="openExpressDialog(scope.row)"
           >添加快递单号
           </el-button>
-          <el-button v-if="status==='待支付'&&flag==='buyer'" size="mini" type="danger" @click="cancel(scope.row.id)">取消订单</el-button>
+          <el-button v-if="scope.row.status==='待支付'&&(flag==='buyer'||flag==='admin')" size="mini" type="danger" @click="cancel(scope.row.id)">取消订单</el-button>
 
         </template>
       </el-table-column>

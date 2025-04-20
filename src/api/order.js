@@ -4,10 +4,11 @@ import request from '@/utils/request'
 /**
  * 获取订单列表
  */
-export function getOrderList() {
+export function getOrderList({ pageNum, pageSize, status }) {
   return request({
     url: '/spba-api/order/getOrderList',
-    method: 'get'
+    method: 'get',
+    params: { pageNum, pageSize, status }
   })
 }
 

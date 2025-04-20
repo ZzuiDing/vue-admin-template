@@ -53,7 +53,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/dashboard'),
-        meta: { title: 'dash', icon: 'form' }
+        meta: { title: '首页', icon: 'form' }
       }
     ]
   },
@@ -206,6 +206,21 @@ export const asyncRoutes = [
         name: 'SellerRefund',
         component: () => import('@/views/refund/refund.vue'),
         meta: { title: '退款管理', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/AdminOrder',
+    name: 'AdminOrder',
+    component: Layout,
+    redirect: '/SellerOrder/paid',
+    meta: { title: '订单管理', icon: 'shopping-bag', roles: [2] },
+    children: [
+      {
+        path: 'index',
+        name: 'Orders',
+        component: () => import('@/views/order/OrderPageBase.vue'),
+        meta: { title: '订单', icon: 'form' }
       }
     ]
   },

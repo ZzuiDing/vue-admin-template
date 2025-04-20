@@ -74,7 +74,7 @@ export default {
     async fetchOrders() {
       try {
         const res = await getOrderList({
-          page: this.currentPage,
+          pageNum: this.currentPage,
           pageSize: this.pageSize,
           status: this.status
         })
@@ -92,7 +92,7 @@ export default {
     async fetchBuyerOrders() {
       try {
         const res = await getBuyerOrderList({
-          page: this.currentPage,
+          pageNum: this.currentPage,
           pageSize: this.pageSize,
           status: this.status
         })
@@ -110,7 +110,7 @@ export default {
     async fetchSellerOrders() {
       try {
         const res = await getSellerOrderList({
-          page: this.currentPage,
+          pageNum: this.currentPage,
           pageSize: this.pageSize,
           status: this.status
         })

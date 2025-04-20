@@ -46,6 +46,7 @@
           :banners="banners"
           :hot-goods="hotGoods"
           :categories="categories"
+          :newest-goods="newestGoods"
           @go-to-product-detail="goToProductDetail"
         />
       </el-main>
@@ -86,7 +87,7 @@
 
 <script>
 import HomePage from './HomePage.vue'
-import {newestGoods, topSoldGoods} from '@/api/good'
+import { newestGoods, topSoldGoods } from '@/api/good'
 import { getToken } from '@/utils/auth'
 import CommonHeader from '@/layout/components/CommonHeader.vue'
 import CommonFooter from '@/layout/components/CommonFooter.vue'
