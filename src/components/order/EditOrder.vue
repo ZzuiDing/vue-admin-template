@@ -17,7 +17,7 @@
         <el-input-number v-model="form.amount" :min="1" disabled />
       </el-form-item>
       <el-form-item label="描述">
-        <el-input v-model="form.desc" type="textarea" :rows="4" placeholder="请输入内容" disabled />
+        <el-input v-model="form.desc" type="textarea" :rows="4" placeholder="请输入内容" />
       </el-form-item>
       <el-form-item label="日期" disabled>
         <el-date-picker

@@ -43,7 +43,6 @@
       <el-main>
         <!-- 动态组件显示 -->
         <HomePage
-          :banners="banners"
           :hot-goods="hotGoods"
           :categories="categories"
           :newest-goods="newestGoods"
@@ -102,10 +101,6 @@ export default {
   },
   data() {
     return {
-      banners: [
-        'https://cdn.pixabay.com/photo/2016/11/22/19/31/adult-1850925_960_720.jpg',
-        'https://cdn.pixabay.com/photo/2016/03/09/09/17/store-1245754_960_720.jpg'
-      ],
       hotGoods: [],
       newestGoods: [],
       categories: [

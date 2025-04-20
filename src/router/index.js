@@ -235,6 +235,33 @@ export const asyncRoutes = [
     ]
   },
   // {
+  //   path: '/AdminRefund',
+  //   name: 'AdminRefund',
+  //   component: Layout,
+  //   redirect: '/AdminRefund/index',
+  //   meta: { title: '退款管理', icon: 'shopping-bag', roles: [2] },
+  //   children: [
+  //     {
+  //
+  //     }
+  //   ]
+  // },
+  {
+    path: '/carousel',
+    component: Layout,
+    redirect: '/carousel/index',
+    name: 'Carousel',
+    meta: { title: '轮播图管理', icon: 'el-icon-s-help', roles: [2] }, // 只允许管理员角色访问
+    children: [
+      {
+        path: 'index',
+        name: '轮播图浏览',
+        component: () => import('@/views/Carousel/index.vue'),
+        meta: { title: '轮播图管理', icon: 'tree', roles: [2] }
+      }
+    ]
+  },
+  // {
   //   path: '/refund',
   //   component: Layout,
   //   redirect: '/refund/index',

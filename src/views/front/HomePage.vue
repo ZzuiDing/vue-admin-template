@@ -1,9 +1,10 @@
 <template>
   <div>
     <!-- 轮播图 -->
-    <el-carousel height="300px">
-      <el-carousel-item v-for="(item, index) in banners" :key="index">
-        <img :src="item" class="banner-img">
+    <el-carousel :height="carouselHeight" arrow="always" autoplay>
+      <el-carousel-item v-for="(item, index) in banners" :key="item.id">
+        <img :src="item.imageUrl" class="banner-img">
+        <div class="banner-desc">{{ item.description }}</div>
       </el-carousel-item>
     </el-carousel>
 
@@ -56,13 +57,23 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'HomePage',
   props: {
-    banners: Array,
     hotGoods: Array,
     newestGoods: Array,
     categories: Array
+  },
+  data() {
+    return {
+      banners: [],
+      carouselHeight: window.innerWidth > 768 ? '400px' : '200px'
+    }
+  },
+  mounted() {
+    this.fetchCarousels()
   },
   methods: {
     // 跳转到商品详情页
@@ -72,6 +83,15 @@ export default {
     },
     goToHot() {
       this.$router.push('/hot')
+    },
+    async fetchCarousels() {
+      // 从后端获取轮播图数据
+      await axios.get('http://localhost:9090/spba-api/carousel/getAllCarousels')
+        .then(response => {
+          // this.banners = response.data.data
+          this.banners = response.data.data.sort((a, b) => a.sortOrder - b.sortOrder)
+          console.log('轮播图数据:', this.banners)
+        })
     }
   }
 }
@@ -95,6 +115,22 @@ export default {
   font-size: 14px;
   color: #409EFF;
   cursor: pointer;
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-desc {
+  position: absolute;
+  bottom: 20px;
+  left: 30px;
+  color: white;
+  font-size: 18px;
+  text-shadow: 1px 1px 3px black;
 }
 
 </style>
