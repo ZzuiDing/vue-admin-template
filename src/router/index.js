@@ -30,6 +30,16 @@ export const constantRoutes = [
     component: () => import('@/views/front/Checkout.vue')
   },
   {
+    path: '/hot',
+    name: 'HotGoodsPage',
+    component: () => import('@/views/front/HotGoodsPage.vue')
+  },
+  {
+    path: '/search',
+    name: 'SearchPage',
+    component: () => import('@/views/front/SearchPage.vue')
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true

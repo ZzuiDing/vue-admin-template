@@ -64,13 +64,22 @@ export function deleteGoodById(id) {
  * 获取热销商品
  * @returns {Promise} 热销商品列表
  */
-export function topSoldGoods() {
+// 示例：API 调用可以像下面这样进行
+// export function topSoldGoods(parmas) {
+//   return request({
+//     url: '/spba-api/goods/topSoldGoods',
+//     method: 'get',
+//     params
+//   })
+// }
+
+export function topSoldGoods(params) {
   return request({
     url: '/spba-api/goods/topSoldGoods',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
-
 /**
  * 获取最新商品
  * @returns {Promise} 热销商品列表

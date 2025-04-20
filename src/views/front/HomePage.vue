@@ -7,21 +7,22 @@
       </el-carousel-item>
     </el-carousel>
 
-    <!-- 热门商品 -->
-    <section class="section">
-      <h2 class="section-title">🔥 热门推荐</h2>
+    <!-- 热门推荐区域 -->
+    <div class="section">
+      <div class="section-header">
+        <h3>热门推荐</h3>
+        <el-button type="text" class="more-link" @click="goToHot">查看更多 ></el-button>
+      </div>
       <el-row :gutter="20">
-        <el-col v-for="(item, index) in hotGoods" :key="index" :span="6">
-          <el-card shadow="hover" @click.native="$router.push({ name: 'ProductDetail', params: { id: item.id } })">
+        <el-col v-for="item in hotGoods" :key="item.id" :span="6">
+          <el-card shadow="hover" @click.native="goToProductDetail(item.id)">
             <img :src="item.picture" class="product-img">
-            <div class="product-info">
-              <h3>{{ item.name }}</h3>
-              <p class="price">¥{{ item.price }}</p>
-            </div>
+            <div class="good-title">{{ item.name }}</div>
+            <div class="good-price">￥{{ item.price }}</div>
           </el-card>
         </el-col>
       </el-row>
-    </section>
+    </div>
 
     <!-- 热门商品 -->
     <section class="section">
@@ -68,6 +69,9 @@ export default {
     goToProductDetail(productId) {
       console.log('跳转到商品详情页，商品ID:', productId)
       this.$emit('go-to-product-detail', productId)
+    },
+    goToHot() {
+      this.$router.push('/hot')
     }
   }
 }
@@ -78,6 +82,19 @@ export default {
   width: 100%;
   height: 180px;
   object-fit: cover;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.more-link {
+  font-size: 14px;
+  color: #409EFF;
+  cursor: pointer;
 }
 
 </style>

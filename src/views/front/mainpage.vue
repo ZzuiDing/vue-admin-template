@@ -91,6 +91,7 @@ import { newestGoods, topSoldGoods } from '@/api/good'
 import { getToken } from '@/utils/auth'
 import CommonHeader from '@/layout/components/CommonHeader.vue'
 import CommonFooter from '@/layout/components/CommonFooter.vue'
+import store from '@/store'
 
 export default {
   name: 'MainPage',
@@ -113,13 +114,10 @@ export default {
         { title: '日用百货', desc: '生活必备，品质好物尽在其中' }
       ],
       cartVisible: false,
-      cartItems: [
-        { name: '手机', price: 2999 },
-        { name: '耳机', price: 399 }
-      ],
+      cartItems: [],
       searchQuery: '', // 搜索框绑定的查询内容
       isLoggedIn: false, // 用户登录状态
-      userAvatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+      userAvatar: store.getters.avatar
     }
   },
   mounted() {
@@ -128,7 +126,7 @@ export default {
     if (token) {
       this.isLoggedIn = true
       // 这里可以获取用户信息，例如头像等
-      this.userAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+      this.userAvatar = store.getters.avatar
     } else {
       this.isLoggedIn = false
     }
@@ -140,10 +138,13 @@ export default {
       this.$router.push('/backend/dashboard')
     },
     // 跳转到商品详情页
-    goToProductDetail(productId) {
-      console.log('跳转到商品详情页，商品ID:', productId)
-      this.currentPage = 'ProductDetailPage'
-      this.currentProductId = productId
+    // goToProductDetail(productId) {
+    //   console.log('跳转到商品详情页，商品ID:', productId)
+    //   this.currentPage = 'ProductDetailPage'
+    //   this.currentProductId = productId
+    // },
+    goToProductDetail(id) {
+      this.$router.push(`/product/${id}`)
     },
     // 跳转到后台管理页面
     backend() {
