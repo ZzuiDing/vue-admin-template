@@ -3,6 +3,7 @@
     <div class="dashboard-text">Hi,  {{ name }}</div>
     <!--    <div class="dashboard-text">邮箱: {{ email }}</div>-->
     <div v-if="role === 1">
+      <p>您当前的钱包余额：{{wealth}}</p>
       <p v-if="summaryData['已发货'] && summaryData['已发货'].value !== undefined">
         您购买的商品目前已发货订单数量：{{ summaryData['已发货'].value }},目前还有{{ summaryData['已支付'].value }}单未发出
         已完成{{ summaryData['已完成'].value }}单订单，目前还有{{ summaryData['待支付'].value }}单待支付
@@ -40,6 +41,7 @@ export default {
   components: { AddUser },
   data() {
     return {
+      wealth: 0,
       dialogVisible: false,
       editUser: null,
       summaryData: {
@@ -151,6 +153,13 @@ export default {
           }
         }
         console.log('更新后的Seller订单统计信息:', this.summaryDataSeller)
+      }
+      const response2 = await userinfo()
+      if (response2.code !== 20000) {
+        this.$message.error('获取用户信息失败')
+      } else {
+        this.wealth = response2.data.wealth
+        console.log('用户信息:', this.editUser)
       }
     }
 

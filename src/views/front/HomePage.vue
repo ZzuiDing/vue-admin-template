@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 轮播图 -->
-    <el-carousel :height="carouselHeight" arrow="always" autoplay>
+    <el-carousel height="600px" arrow="always" autoplay>
       <el-carousel-item v-for="(item, index) in banners" :key="item.id">
         <img :src="item.imageUrl" class="banner-img">
         <div class="banner-desc">{{ item.description }}</div>
@@ -69,7 +69,7 @@ export default {
   data() {
     return {
       banners: [],
-      carouselHeight: window.innerWidth > 768 ? '400px' : '200px'
+      // carouselHeight: window.innerWidth > 768 ? '400px' : '200px'
     }
   },
   mounted() {

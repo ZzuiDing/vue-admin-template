@@ -38,9 +38,20 @@
       <el-form-item label="支付金额" disabled>
         <el-input-number v-model="form.payAmount" :min="0" :precision="2" disabled />
       </el-form-item>
-      <el-form-item label="快递号" disabled>
-        <el-input v-model="form.expressId" :disabled="!(flag === 'seller'&&status==='已支付')" />
+      <el-form-item label="快递号" :disabled="!(flag === 'seller'&&status==='已支付')">
+        <el-input v-model="form.expressId" style="width: 70%;"/>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          style="margin-left: 10px;"
+          @click="getExpressDetail"
+          :disabled="!form.expressId"
+        >
+          查看详情
+        </el-button>
       </el-form-item>
+
+
       <el-form-item label="地址" disabled>
         <el-input v-model="form.addressId" disabled />
       </el-form-item>
@@ -50,11 +61,41 @@
         <el-button @click="closeDialog">取消</el-button>
       </el-form-item>
     </el-form>
+    <el-drawer
+      title="快递详情"
+      :visible.sync="expressDrawerVisible"
+      size="50%"
+      direction="rtl"
+      custom-class="express-drawer"
+      :modal="false"
+      :with-header="true"
+      :append-to-body="true"
+      :lock-scroll="false"
+    >
+      <div v-if="expressInfo && expressInfo.result">
+        <p><strong>快递公司：</strong>{{ expressInfo.result.expName }}</p>
+        <p><strong>快递单号：</strong>{{ expressInfo.result.number }}</p>
+        <el-timeline>
+          <el-timeline-item
+            v-for="(item, index) in expressInfo.result.list"
+            :key="index"
+            :timestamp="item.time"
+          >
+            {{ item.status }}
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+      <div v-else>
+        <p>暂无快递信息</p>
+      </div>
+    </el-drawer>
+
   </div>
 </template>
 
 <script>
 import { addOrder, updateOrder } from '@/api/order'
+import { express } from '@/api/express'
 
 export default {
   name: 'EditOrder',
@@ -86,7 +127,10 @@ export default {
         payAmount: 0,
         expressId: '',
         addressId: ''
-      }
+      },
+      expressDrawerVisible: false,
+      expressInfo: null
+
     }
   },
   computed: {
@@ -113,6 +157,20 @@ export default {
     console.log('flag', this.flag)
   },
   methods: {
+    async getExpressDetail() {
+      try {
+        const res = await express(this.form.expressId)
+        if (res.code === 20000) {
+          this.expressInfo = JSON.parse(res.data)
+          this.expressDrawerVisible = true
+        } else {
+          this.$message.error('获取快递信息失败：' + res.message)
+        }
+      } catch (err) {
+        console.error(err)
+        this.$message.error('请求出错，请稍后重试')
+      }
+    },
     resetForm() {
       this.form = {
         id: '',
