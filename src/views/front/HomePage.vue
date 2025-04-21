@@ -68,7 +68,7 @@ export default {
   },
   data() {
     return {
-      banners: [],
+      banners: []
       // carouselHeight: window.innerWidth > 768 ? '400px' : '200px'
     }
   },

@@ -1,26 +1,48 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">Hi,  {{ name }}</div>
-    <!--    <div class="dashboard-text">邮箱: {{ email }}</div>-->
-    <div v-if="role === 1">
-      <p>您当前的钱包余额：{{wealth}}</p>
-      <p v-if="summaryData['已发货'] && summaryData['已发货'].value !== undefined">
-        您购买的商品目前已发货订单数量：{{ summaryData['已发货'].value }},目前还有{{ summaryData['已支付'].value }}单未发出
-        已完成{{ summaryData['已完成'].value }}单订单，目前还有{{ summaryData['待支付'].value }}单待支付
-      </p>
-      <p v-if="summaryDataSeller['已发货'] && summaryDataSeller['已发货'].value !== undefined">
-        您出售的商品目前已发货订单数量：{{ summaryDataSeller['已发货'].value }},{{ summaryDataSeller['已支付'].value }}单未发出
-        已完成{{ summaryDataSeller['已完成'].value }}单订单，目前还有{{ summaryDataSeller['待支付'].value }}单待支付
-      </p>
-    </div>
-    <el-button type="primary" @click="openDialog">修改用户信息</el-button>
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <el-card shadow="hover">
+          <div class="wealth-box">
+            <div class="title">钱包余额</div>
+            <div class="wealth">
+              <el-icon>
+                <Coin />
+              </el-icon>
+              <span class="amount">￥{{ wealth }}</span>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="16">
+        <el-card shadow="hover">
+          <div class="title">个人订单统计</div>
+          <div ref="orderChart" style="height: 300px;" />
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20" style="margin-top: 20px">
+      <el-col :span="12">
+        <el-card shadow="hover">
+          <div class="title">出售订单统计</div>
+          <div ref="sellerChart" style="height: 300px;" />
+        </el-card>
+      </el-col>
+      <el-col :span="12" class="btn-panel">
+        <el-card shadow="hover">
+          <div class="title">操作</div>
+          <el-button type="primary" @click="openDialog">修改用户信息</el-button>
+        </el-card>
+      </el-col>
+    </el-row>
+
     <el-dialog
       :visible.sync="dialogVisible"
       title="修改我的信息"
       width="50%"
       @before-close="dialogClosed"
     >
-      <!-- 复用 AddUser 组件 -->
       <AddUser
         :user-data="editUser"
         @closeDialog="dialogClosed"
@@ -35,6 +57,7 @@ import { mapGetters } from 'vuex'
 import AddUser from '@/views/User/AddUser.vue'
 import { userinfo } from '@/api/user'
 import { summary, summarySeller } from '@/api/order'
+import * as echarts from 'echarts'
 
 export default {
   name: 'Dashboard',
@@ -98,6 +121,44 @@ export default {
     this.fetchData()
   },
   methods: {
+    initOrderChart() {
+      const chart = echarts.init(this.$refs.orderChart)
+      const option = this.buildChartOption(this.summaryData)
+      chart.setOption(option)
+    },
+
+    initSellerChart() {
+      const chart = echarts.init(this.$refs.sellerChart)
+      const option = this.buildChartOption(this.summaryDataSeller)
+      chart.setOption(option)
+    },
+
+    buildChartOption(data) {
+      return {
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          bottom: '0%'
+        },
+        series: [
+          {
+            name: '订单状态',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+              show: true,
+              formatter: '{b}: {c}单'
+            },
+            data: Object.entries(data).map(([status, item]) => ({
+              value: item.value,
+              name: status
+            }))
+          }
+        ]
+      }
+    },
     openDialog() {
       // 把当前用户的信息传给 AddUser
       // this.editUser = {}
@@ -161,6 +222,10 @@ export default {
         this.wealth = response2.data.wealth
         console.log('用户信息:', this.editUser)
       }
+      this.$nextTick(() => {
+        this.initOrderChart()
+        this.initSellerChart()
+      })
     }
 
   }
@@ -168,14 +233,37 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dashboard {
-  &-container {
-    margin: 30px;
-  }
+.dashboard-container {
+  margin: 30px;
+}
 
-  &-text {
-    font-size: 20px;
-    margin-bottom: 10px;
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.wealth-box {
+  .wealth {
+    font-size: 28px;
+    font-weight: bold;
+    color: #67c23a;
+    display: flex;
+    align-items: center;
+
+    .el-icon {
+      margin-right: 10px;
+    }
   }
+}
+
+.amount {
+  font-size: 30px;
+}
+
+.btn-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

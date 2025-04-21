@@ -39,18 +39,17 @@
         <el-input-number v-model="form.payAmount" :min="0" :precision="2" disabled />
       </el-form-item>
       <el-form-item label="快递号" :disabled="!(flag === 'seller'&&status==='已支付')">
-        <el-input v-model="form.expressId" style="width: 70%;"/>
+        <el-input v-model="form.expressId" style="width: 70%;" />
         <el-button
           type="primary"
           icon="el-icon-search"
           style="margin-left: 10px;"
-          @click="getExpressDetail"
           :disabled="!form.expressId"
+          @click="getExpressDetail"
         >
           查看详情
         </el-button>
       </el-form-item>
-
 
       <el-form-item label="地址" disabled>
         <el-input v-model="form.addressId" disabled />
