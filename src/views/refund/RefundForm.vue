@@ -67,7 +67,7 @@ export default {
   methods: {
     async submit() {
       try {
-        const res = await request.post('/spba-api/refund/update', this.refund)
+        const res = await request.post('/spba-api/refund/updateRefund', this.refund)
         if (res.code === 20000) {
           this.$message.success('处理成功')
           this.$emit('closeDialog')

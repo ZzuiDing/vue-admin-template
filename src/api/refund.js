@@ -33,9 +33,25 @@ export function getSellerRefund({ page, size, keyword = '' } = {}) {
   })
 }
 
+// 获取卖家的退款列表（带分页）
+export function getALLRefund({ page, size, keyword = '' } = {}) {
+  return request({
+    url: '/spba-api/refund/getAllRefundList',
+    method: 'get',
+    params: { page, size, keyword }
+  })
+}
+
 export function acceptRefund(refundId) {
   return request({
     url: '/spba-api/refund/acceptRefund?refundId=' + refundId,
+    method: 'post'
+  })
+}
+
+export function declineRefund(refundId) {
+  return request({
+    url: '/spba-api/refund/declineRefund?refundId=' + refundId,
     method: 'post'
   })
 }

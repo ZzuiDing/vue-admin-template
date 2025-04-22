@@ -169,6 +169,13 @@ export function summarySeller() {
   })
 }
 
+export function summaryAdmin(){
+  return request({
+    url: '/spba-api/order/order/status-countAdmin',
+    method: 'get'
+  })
+}
+
 // 获取订单详情
 export function getOrderDetail(orderId) {
   return request({

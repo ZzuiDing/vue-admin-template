@@ -107,7 +107,15 @@
 
 <script>
 import RefundForm from './RefundForm.vue'
-import { getBuyerRefund, cancelRefund, getSellerRefund, acceptRefund, addExpress, commit } from '@/api/refund'
+import {
+  getBuyerRefund,
+  cancelRefund,
+  getSellerRefund,
+  acceptRefund,
+  addExpress,
+  commit,
+  declineRefund, getALLRefund
+} from '@/api/refund'
 import EditOrder from '@/components/order/EditOrder.vue'
 import { getOrderDetail } from '@/api/order'
 
@@ -136,6 +144,23 @@ export default {
     this.dealErs()
   },
   methods: {
+    async decline(id) {
+      this.$confirm('确定拒绝该退款申请吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        declineRefund(id).then(res => {
+          if (res.code === 20000) {
+            this.$message.success('处理成功')
+            this.dealErs()
+          } else {
+            this.$message.error(res.message || '处理失败')
+          }
+        })
+      }).catch(() => {
+      })
+    },
     async commit(id) {
       const res = await commit(id)
       if (res.code === 20000) {
@@ -202,7 +227,7 @@ export default {
         this.fetchSellerRefunds()
         this.flag = 'seller'
       } else {
-        // this.fetchOrders()
+        this.fetchALLRefunds()
         this.flag = 'admin'
       }
     },
@@ -235,6 +260,20 @@ export default {
     async fetchSellerRefunds() {
       try {
         const res = await getSellerRefund({ page: this.currentPage, size: this.pageSize })
+        if (res.code === 20000) {
+          this.tableData = res.data.records
+          this.totalRecords = res.data.total // 总记录数
+        } else {
+          this.$message.error(res.message || '获取退款数据失败')
+        }
+      } catch (error) {
+        console.error(error)
+        this.$message.error('网络错误')
+      }
+    },
+    async fetchALLRefunds() {
+      try {
+        const res = await getALLRefund({page: this.currentPage, size: this.pageSize})
         if (res.code === 20000) {
           this.tableData = res.data.records
           this.totalRecords = res.data.total // 总记录数

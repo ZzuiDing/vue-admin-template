@@ -10,10 +10,16 @@
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="form.phone" placeholder="请输入手机号" />
       </el-form-item>
+      <el-form-item label="性别" prop="gender">
+        <el-select v-model="form.gender" placeholder="请选择性别">
+          <el-option label="男" value="男" />
+          <el-option label="女" value="女" />
+        </el-select>
+      </el-form-item>
       <el-form-item v-if="$store.getters.role===2" label="角色" prop="role">
         <el-select v-model="form.role" placeholder="请选择角色">
-          <el-option label="管理员" value="admin" />
-          <el-option label="用户" value="user" />
+          <el-option label="管理员" value="2" />
+          <el-option label="用户" value="1" />
         </el-select>
       </el-form-item>
       <el-form-item label="密码" prop="passwd">

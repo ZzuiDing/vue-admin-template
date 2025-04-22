@@ -130,6 +130,27 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/withdraw',
+    component: Layout,
+    redirect: '/withdraw/index',
+    name: 'Withdraw',
+    meta: { title: '提现管理', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: 'UserWithDraw',
+        name: '提现申请',
+        component: () => import('@/views/WithDraw/UserWithdraw.vue'),
+        meta: { title: '提现申请', icon: 'tree', roles: [1] }
+      },
+      {
+        path: 'AdminWithDraw',
+        name: '提现审核',
+        component: () => import('@/views/WithDraw/AdminWithdraw.vue'),
+        meta: { title: '提现审核', icon: 'tree', roles: [2] } // 只允许管理员角色访问
+      }
+    ]
+  },
+  {
     path: '/address',
     component: Layout,
     children: [
@@ -227,10 +248,16 @@ export const asyncRoutes = [
     meta: { title: '订单管理', icon: 'shopping-bag', roles: [2] },
     children: [
       {
-        path: 'index',
+        path: 'Order',
         name: 'Orders',
         component: () => import('@/views/order/OrderPageBase.vue'),
         meta: { title: '订单', icon: 'form' }
+      },
+      {
+        path: 'Refund',
+        name: 'Refund',
+        component: () => import('@/views/refund/refund.vue'),
+        meta: { title: '退款', icon: 'form' }
       }
     ]
   },

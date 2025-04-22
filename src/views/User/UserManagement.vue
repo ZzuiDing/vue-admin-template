@@ -21,8 +21,10 @@
       </el-table-column>
       <el-table-column prop="name" label="用户名" min-width="120" />
       <el-table-column prop="email" label="邮箱" min-width="180" />
+      <el-table-column prop="gender" label="性别" min-width="30" />
+      <el-table-column prop="phone" label="电话" min-width="60" />
+      <el-table-column prop="wealth" label="钱包余额" min-width="100" />
       <el-table-column prop="role" label="角色" min-width="100" />
-      <el-table-column prop="status" label="状态" min-width="80" />
       <el-table-column label="操作" min-width="200">
         <template #default="scope">
           <el-button
