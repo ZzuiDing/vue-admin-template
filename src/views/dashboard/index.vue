@@ -6,13 +6,13 @@
         <el-col :span="12">
           <el-card shadow="hover">
             <div class="title">出售订单统计</div>
-            <div ref="sellerChart" style="height: 300px;"/>
+            <div ref="sellerChart" style="height: 300px;" />
           </el-card>
         </el-col>
         <el-col :span="12">
           <el-card shadow="hover">
             <div class="title">个人订单统计</div>
-            <div ref="orderChart" style="height: 300px;"/>
+            <div ref="orderChart" style="height: 300px;" />
           </el-card>
         </el-col>
       </el-row>
@@ -24,7 +24,7 @@
               <div class="title">钱包余额</div>
               <div class="wealth">
                 <el-icon>
-                  <Coin/>
+                  <Coin />
                 </el-icon>
                 <span class="amount">￥{{ wealth }}</span>
               </div>
@@ -46,7 +46,7 @@
         <el-col :span="12">
           <el-card shadow="hover">
             <div class="title">全部订单统计</div>
-            <div ref="adminChart" style="height: 300px;"/>
+            <div ref="adminChart" style="height: 300px;" />
           </el-card>
         </el-col>
         <el-col :span="12" class="btn-panel">
@@ -75,15 +75,15 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import AddUser from '@/views/User/AddUser.vue'
-import {userinfo} from '@/api/user'
-import {summary, summarySeller, summaryAdmin} from '@/api/order'
+import { userinfo } from '@/api/user'
+import { summary, summarySeller, summaryAdmin } from '@/api/order'
 import * as echarts from 'echarts'
 
 export default {
   name: 'Dashboard',
-  components: {AddUser},
+  components: { AddUser },
   data() {
     return {
       wealth: 0,
@@ -134,9 +134,9 @@ export default {
     // 修正数据映射方法
     mapChartData(rawData) {
       const chartData = []
-      for (let status in rawData) {
-        const {value, status: label} = rawData[status]
-        chartData.push({value, name: label})
+      for (const status in rawData) {
+        const { value, status: label } = rawData[status]
+        chartData.push({ value, name: label })
       }
       return chartData
     },
@@ -147,14 +147,14 @@ export default {
     },
     buildChartOption(data) {
       return {
-        tooltip: {trigger: 'item'},
-        legend: {bottom: '0%'},
+        tooltip: { trigger: 'item' },
+        legend: { bottom: '0%' },
         series: [
           {
             name: '订单状态',
             type: 'pie',
             radius: ['40%', '70%'],
-            label: {formatter: '{b}: {c}单'},
+            label: { formatter: '{b}: {c}单' },
             data: data
           }
         ]

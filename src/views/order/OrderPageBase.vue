@@ -6,6 +6,7 @@
       :status="status"
       @edit="handleEdit"
       @updateOrder="dealErs"
+      @viewExpress="handleViewExpress"
     />
 
     <el-pagination
@@ -26,6 +27,35 @@
         @closeDialog="dialogVisible = false"
       />
     </el-dialog>
+    <el-drawer
+      title="快递详情"
+      :visible.sync="expressDrawerVisible"
+      size="50%"
+      direction="rtl"
+      custom-class="express-drawer"
+      :modal="false"
+      :with-header="true"
+      :append-to-body="true"
+      :lock-scroll="false"
+    >
+      <div v-if="expressInfo && expressInfo.result">
+        <p><strong>快递公司：</strong>{{ expressInfo.result.expName }}</p>
+        <p><strong>快递单号：</strong>{{ expressInfo.result.number }}</p>
+        <el-timeline>
+          <el-timeline-item
+            v-for="(item, index) in expressInfo.result.list"
+            :key="index"
+            :timestamp="item.time"
+          >
+            {{ item.status }}
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+      <div v-else>
+        <p>暂无快递信息</p>
+      </div>
+    </el-drawer>
+
   </div>
 </template>
 
@@ -33,6 +63,7 @@
 import { getBuyerOrderList, getOrderList, getSellerOrderList } from '@/api/order'
 import OrderTable from '@/components/order/OrderTable.vue'
 import EditOrder from '@/components/order/EditOrder.vue'
+import { express } from '@/api/express'
 
 export default {
   name: 'OrderPageBase',
@@ -48,13 +79,43 @@ export default {
       pageSize: 10,
       dialogVisible: false,
       currentOrder: null,
-      flag: ''
+      flag: '',
+      expressDrawerVisible: false,
+      expressInfo: null
     }
   },
   mounted() {
     this.dealErs()
   },
   methods: {
+    async handleViewExpress(expressNumber) {
+      // try {
+      //   const res = await express(this.form.expressId)
+      //   if (res.code === 20000) {
+      //     this.expressInfo = JSON.parse(res.data)
+      //     this.expressDrawerVisible = true
+      //   } else {
+      //     this.$message.error('获取快递信息失败：' + res.message)
+      //   }
+      // } catch (err) {
+      //   console.error(err)
+      //   this.$message.error('请求出错，请稍后重试')
+      // }
+      try {
+        const res = await express(expressNumber)
+        if (res.code === 20000) {
+          this.expressInfo = JSON.parse(res.data)
+        } else {
+          this.expressInfo = null
+          this.$message.warning('未获取到快递信息：' + res.message)
+        }
+      } catch (err) {
+        console.error('获取快递信息失败:', err)
+        this.expressInfo = null
+        this.$message.error('获取快递信息异常')
+      }
+      this.expressDrawerVisible = true
+    },
     handlePageChange(page) {
       this.currentPage = page
       this.dealErs()

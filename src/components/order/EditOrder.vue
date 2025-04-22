@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="form" label-width="120px" :disabled="flag === 'buyer'">
+    <el-form :model="form" label-width="120px">
       <el-form-item label="订单ID">
         <el-input v-model="form.id" :disabled="isEdit" />
       </el-form-item>
@@ -38,8 +38,8 @@
       <el-form-item label="支付金额" disabled>
         <el-input-number v-model="form.payAmount" :min="0" :precision="2" disabled />
       </el-form-item>
-      <el-form-item label="快递号" :disabled="!(flag === 'seller'&&status==='已支付')">
-        <el-input v-model="form.expressId" style="width: 70%;" />
+      <el-form-item label="快递号">
+        <el-input v-model="form.expressId" style="width: 70%;" :disabled="!(flag === 'seller'&&status==='已支付')" />
         <el-button
           type="primary"
           icon="el-icon-search"

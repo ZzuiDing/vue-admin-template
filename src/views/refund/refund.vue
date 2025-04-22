@@ -16,7 +16,26 @@
       </el-table-column>
       <el-table-column prop="reason" label="退款原因" min-width="180" />
       <el-table-column prop="status" label="状态" min-width="100" />
-      <el-table-column prop="express" label="快递单号" min-width="100" />
+      <el-table-column prop="express" label="快递单号" min-width="180">
+        <template #default="scope">
+          <div style="display: flex; align-items: center;">
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              {{ scope.row.express || '—' }}
+            </span>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-search"
+              style="margin-left: 8px;"
+              :disabled="!scope.row.express"
+              @click="getExpressDetail(scope.row.express)"
+            >
+              查看
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
+
       <el-table-column label="操作" min-width="180">
         <template #default="scope">
           <el-button
@@ -102,6 +121,34 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <el-drawer
+      title="快递详情"
+      :visible.sync="expressDrawerVisible"
+      size="50%"
+      direction="rtl"
+      custom-class="express-drawer"
+      :modal="false"
+      :with-header="true"
+      :append-to-body="true"
+      :lock-scroll="false"
+    >
+      <div v-if="expressInfo && expressInfo.result">
+        <p><strong>快递公司：</strong>{{ expressInfo.result.expName }}</p>
+        <p><strong>快递单号：</strong>{{ expressInfo.result.number }}</p>
+        <el-timeline>
+          <el-timeline-item
+            v-for="(item, index) in expressInfo.result.list"
+            :key="index"
+            :timestamp="item.time"
+          >
+            {{ item.status }}
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+      <div v-else>
+        <p>暂无快递信息</p>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -118,6 +165,7 @@ import {
 } from '@/api/refund'
 import EditOrder from '@/components/order/EditOrder.vue'
 import { getOrderDetail } from '@/api/order'
+import { express } from '@/api/express'
 
 export default {
   components: { EditOrder, RefundForm: RefundForm },
@@ -137,13 +185,41 @@ export default {
       },
       totalRecords: 0, // 总记录数
       currentPage: 1, // 当前页
-      pageSize: 10 // 每页显示的数量
+      pageSize: 10, // 每页显示的数量
+      expressDrawerVisible: false
+    }
+  },
+  watch: {
+    expressDrawerVisible(val) {
+      if (!val) {
+        this.expressInfo = {
+          result: {
+            expName: '',
+            number: '',
+            list: []
+          }
+        }
+      }
     }
   },
   mounted() {
     this.dealErs()
   },
   methods: {
+    async getExpressDetail(id) {
+      try {
+        const res = await express(id)
+        if (res.code === 20000) {
+          this.expressInfo = JSON.parse(res.data)
+          this.expressDrawerVisible = true
+        } else {
+          this.$message.error('获取快递信息失败：' + res.message)
+        }
+      } catch (err) {
+        console.error(err)
+        this.$message.error('请求出错，请稍后重试')
+      }
+    },
     async decline(id) {
       this.$confirm('确定拒绝该退款申请吗？', '提示', {
         confirmButtonText: '确定',
@@ -273,7 +349,7 @@ export default {
     },
     async fetchALLRefunds() {
       try {
-        const res = await getALLRefund({page: this.currentPage, size: this.pageSize})
+        const res = await getALLRefund({ page: this.currentPage, size: this.pageSize })
         if (res.code === 20000) {
           this.tableData = res.data.records
           this.totalRecords = res.data.total // 总记录数

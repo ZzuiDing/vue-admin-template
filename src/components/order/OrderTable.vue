@@ -6,12 +6,39 @@
       <el-table-column prop="buyer" label="买方" />
       <el-table-column prop="seller" label="卖方" />
       <el-table-column prop="goodName" label="内容" />
-      <el-table-column prop="amount" label="数量" />
+      <el-table-column prop="amount" label="数量" width="50" />
       <el-table-column prop="date" label="日期" />
-      <el-table-column prop="status" label="状态" />
+      <el-table-column prop="status" label="状态" width="100" />
       <el-table-column v-if="status!=='待支付'" prop="payMethod" label="支付方式" />
       <el-table-column prop="payAmount" label="金额" />
-      <el-table-column v-if="status!=='待支付'&&status!=='已支付'" prop="expressId" label="快递单号" />
+      <el-table-column
+        v-if="status !== '待支付' && status !== '已支付'"
+        prop="expressId"
+        label="快递单号"
+        min-width="200"
+      >
+        <template #default="{ row }">
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <span
+              style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+              :title="row.expressId"
+            >
+              {{ row.expressId || '—' }}
+            </span>
+            <el-button
+              v-if="row.expressId"
+              type="primary"
+              size="mini"
+              icon="el-icon-search"
+              style="margin-left: 8px; flex-shrink: 0;"
+              @click="$emit('viewExpress', row.expressId)"
+            >
+              查看详情
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
+
       <el-table-column v-if="status!=='待支付'" prop="addressId" label="地址" />
       <el-table-column label="操作" width="200">
         <template #default="scope">

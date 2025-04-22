@@ -24,8 +24,8 @@
       :current-page="pageNum"
       :page-size="pageSize"
       :total="total"
-      @current-change="handlePageChange"
       style="margin-top: 20px; text-align: right"
+      @current-change="handlePageChange"
     />
 
   </div>

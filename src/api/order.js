@@ -169,7 +169,7 @@ export function summarySeller() {
   })
 }
 
-export function summaryAdmin(){
+export function summaryAdmin() {
   return request({
     url: '/spba-api/order/order/status-countAdmin',
     method: 'get'
