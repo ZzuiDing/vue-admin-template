@@ -183,3 +183,11 @@ export function getOrderDetail(orderId) {
     method: 'get'
   })
 }
+
+// 获取近期订单
+export function getRecentSevenDaysOrders() {
+  return request({
+    url: '/spba-api/order/sevenDays',
+    method: 'get'
+  })
+}

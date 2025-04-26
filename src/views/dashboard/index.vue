@@ -18,6 +18,18 @@
       </el-row>
 
       <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="12">
+          <el-card shadow="hover">
+            <div class="title">近七日订单数量</div>
+            <div ref="dailyUserChart" style="height: 300px;" />
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <div class="title">操作</div>
+            <el-button type="primary" @click="openDialog">修改用户信息</el-button>
+          </el-card>
+        </el-col>
         <el-col :span="8">
           <el-card shadow="hover">
             <div class="wealth-box">
@@ -31,13 +43,9 @@
             </div>
           </el-card>
         </el-col>
-        <el-col :span="12" class="btn-panel">
-          <el-card shadow="hover">
-            <div class="title">操作</div>
-            <el-button type="primary" @click="openDialog">修改用户信息</el-button>
-          </el-card>
-        </el-col>
       </el-row>
+
+      <el-row :gutter="20" style="margin-top: 20px" />
     </div>
 
     <!-- 管理员 -->
@@ -49,7 +57,17 @@
             <div ref="adminChart" style="height: 300px;" />
           </el-card>
         </el-col>
-        <el-col :span="12" class="btn-panel">
+
+        <el-col :span="12">
+          <el-card shadow="hover">
+            <div class="title">近七日订单数量</div>
+            <div ref="dailyAdminChart" style="height: 300px;" />
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="24">
           <el-card shadow="hover">
             <div class="title">操作</div>
             <el-button type="primary" @click="openDialog">修改用户信息</el-button>
@@ -78,7 +96,11 @@
 import { mapGetters } from 'vuex'
 import AddUser from '@/views/User/AddUser.vue'
 import { userinfo } from '@/api/user'
-import { summary, summarySeller, summaryAdmin } from '@/api/order'
+import {
+  summary,
+  summarySeller,
+  summaryAdmin, getRecentSevenDaysOrders
+} from '@/api/order'
 import * as echarts from 'echarts'
 
 export default {
@@ -91,7 +113,9 @@ export default {
       editUser: null,
       summaryData: {},
       summaryDataSeller: {},
-      summaryDataAdmin: {}
+      summaryDataAdmin: {},
+      dailyDataAdmin: [],
+      dailyDataUser: []
     }
   },
   computed: {
@@ -110,20 +134,31 @@ export default {
         }
 
         if (this.role === 1) {
-          const [res1, res2] = await Promise.all([summary(), summarySeller()])
+          const [res1, res2, res3] = await Promise.all([
+            summary(),
+            summarySeller(),
+            getRecentSevenDaysOrders()
+          ])
           if (res1.code === 20000) this.summaryData = this.mapChartData(res1.data)
           if (res2.code === 20000) this.summaryDataSeller = this.mapChartData(res2.data)
+          if (res3.code === 20000) this.dailyDataUser = res3.data
         } else if (this.role === 2) {
-          const res = await summaryAdmin()
+          const [res, dailyRes] = await Promise.all([
+            summaryAdmin(),
+            getRecentSevenDaysOrders()
+          ])
           if (res.code === 20000) this.summaryDataAdmin = this.mapChartData(res.data)
+          if (dailyRes.code === 20000) this.dailyDataAdmin = dailyRes.data
         }
 
         this.$nextTick(() => {
           if (this.role === 1) {
             this.initChart(this.$refs.orderChart, this.summaryData)
             this.initChart(this.$refs.sellerChart, this.summaryDataSeller)
+            this.initLineChart(this.$refs.dailyUserChart, this.dailyDataUser)
           } else if (this.role === 2) {
             this.initChart(this.$refs.adminChart, this.summaryDataAdmin)
+            this.initLineChart(this.$refs.dailyAdminChart, this.dailyDataAdmin)
           }
         })
       } catch (error) {
@@ -131,7 +166,6 @@ export default {
         console.error(error)
       }
     },
-    // 修正数据映射方法
     mapChartData(rawData) {
       const chartData = []
       for (const status in rawData) {
@@ -159,6 +193,28 @@ export default {
           }
         ]
       }
+    },
+    initLineChart(refEl, data) {
+      if (!refEl) return
+      const chart = echarts.init(refEl)
+      chart.setOption({
+        title: { text: '近七日订单数', left: 'center' },
+        tooltip: { trigger: 'axis' },
+        xAxis: {
+          type: 'category',
+          data: data.map(item => item.date)
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: data.map(item => item.count),
+            type: 'line',
+            smooth: true
+          }
+        ]
+      })
     },
     openDialog() {
       this.dialogVisible = true

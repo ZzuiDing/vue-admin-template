@@ -101,9 +101,9 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        name: '种类管理',
+        name: '品类管理',
         component: () => import('@/views/kind/kind.vue'),
-        meta: { title: '种类管理', icon: 'kind' }
+        meta: { title: '品类管理', icon: 'kind' }
       }
     ]
   }
