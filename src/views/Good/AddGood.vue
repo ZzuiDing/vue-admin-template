@@ -1,16 +1,21 @@
 <template>
   <div>
-    <el-form ref="form" :model="good" label-width="100px">
-      <el-form-item v-if="good.id!== null" label="商品ID">
+    <el-form ref="form" :model="good" :rules="rules" label-width="100px">
+      <!-- 新增：京东商品ID输入 -->
+      <el-form-item label="京东商品链接">
+        <el-input v-model="jdGoodUrl" placeholder="输入京东商品链接" style="width: 300px; margin-right: 10px;"/>
+        <el-button type="primary" @click="fetchJDGoodInform">拉取</el-button>
+      </el-form-item>
+      <el-form-item v-if="good.id !== null" label="商品ID">
         <el-input v-model="good.id" disabled />
       </el-form-item>
-      <el-form-item v-if="good.id!== null" label="用户ID">
+      <el-form-item v-if="good.id !== null" label="用户ID">
         <el-input v-model="good.userId" disabled />
       </el-form-item>
-      <el-form-item label="商品名称">
+      <el-form-item label="商品名称" prop="name">
         <el-input v-model="good.name" />
       </el-form-item>
-      <el-form-item label="价格">
+      <el-form-item label="价格" prop="price">
         <el-input v-model="good.price" type="number" />
       </el-form-item>
       <el-form-item label="图片">
@@ -25,10 +30,10 @@
           <i v-else class="el-icon-plus avatar-uploader-icon" />
         </el-upload>
       </el-form-item>
-      <el-form-item label="简介">
+      <el-form-item label="简介" prop="desc">
         <el-input v-model="good.desc" />
       </el-form-item>
-      <el-form-item label="商品类别">
+      <el-form-item label="商品类别" prop="kindId">
         <el-select v-model="good.kindId" placeholder="请选择类别">
           <el-option
             v-for="kind in kindList"
@@ -70,8 +75,24 @@ export default {
         kindId: '',
         desc: ''
       },
+      jdGoodUrl: '',
       kindList: [], // 存储类别列表
-      file: null
+      file: null,
+      rules: {
+        name: [
+          { required: true, message: '商品名称不能为空', trigger: 'blur' }
+        ],
+        picture: [
+          { required: true, message: '商品图片不能为空', trigger: 'blur' }
+        ],
+        price: [
+          { required: true, message: '价格不能为空', trigger: 'blur' },
+          { type: 'number', message: '价格必须是数字', trigger: 'blur' }
+        ],
+        kindId: [
+          { required: true, message: '请选择商品类别', trigger: 'change' }
+        ]
+      }
     }
   },
   watch: {
@@ -92,6 +113,36 @@ export default {
     this.fetchKindList()
   },
   methods: {
+    async fetchJDGoodInform() {
+      if (!this.jdGoodUrl) return this.$message.warning('请输入京东商品链接')
+
+      // 提取商品ID的正则表达式
+      const regex = /item\.jd\.com\/(\d+)\.html/
+      const match = this.jdGoodUrl.match(regex)
+
+      if (!match) {
+        return this.$message.warning('链接格式错误，请输入有效的京东商品链接')
+      }
+
+      const jdGoodId = match[1] // 提取商品ID
+      try {
+        const res = await axios.get('http://localhost:9090/spba-api/jdGoods/getJDGoodInform', {
+          params: { goodId: jdGoodId }
+        })
+        const data = JSON.parse(res.data)
+        const item = data?.jingdong_new_ware_baseproduct_get_responce?.listproductbase_result?.[0]
+        if (item) {
+          this.good.name = item.name
+          this.good.picture = item.imagePath
+          this.$message.success('信息填充成功')
+        } else {
+          this.$message.error('未找到商品信息')
+        }
+      } catch (err) {
+        console.error(err)
+        this.$message.error('请求出错')
+      }
+    },
     // 获取商品类别列表
     async fetchKindList() {
       try {
@@ -106,44 +157,40 @@ export default {
       }
     },
     async submitForm() {
-      try {
-        // 判断是新增还是修改，根据业务需求选择 URL
-        let url = ''
-        if (!this.good.id) {
-          url = 'http://localhost:9090/spba-api/goods/add'
-        } else {
-          url = 'http://localhost:9090/spba-api/goods/update'
-        }
+      await this.$refs.form.validate(async(valid) => {
+        if (valid) {
+          try {
+            let url = ''
+            if (!this.good.id) {
+              url = 'http://localhost:9090/spba-api/goods/add'
+            } else {
+              url = 'http://localhost:9090/spba-api/goods/update'
+            }
 
-        // 使用封装的 axios 请求
-        const response = await request.post(url, this.good)
-        console.log('response:', response)
-        // const {data} = response;
-
-        // 判断返回的自定义 code 是否为 20000
-        console.log('提交结果:', response.code)
-        // console.log('提交结果:', response.data.code);
-        if (response.code === 20000) {
-          if (!this.good.id) {
-            this.$message.success('新增成功！')
-          } else {
-            this.$message.success('修改成功！')
+            const response = await request.post(url, this.good)
+            if (response.code === 20000) {
+              if (!this.good.id) {
+                this.$message.success('新增成功！')
+              } else {
+                this.$message.success('修改成功！')
+              }
+              this.resetForm()
+              this.$emit('closeDialog')
+              this.$emit('refreshTable')
+            } else {
+              this.$message.error(response.message || '提交失败，请检查输入！')
+            }
+          } catch (error) {
+            console.error('提交失败:', error)
+            this.$message.error('提交失败，请检查输入！')
           }
-          this.resetForm()
-          this.$emit('closeDialog')
-          this.$emit('refreshTable')
         } else {
-          // 如果 code 不是 20000，提示错误信息
-          this.$message.error(response.message || '提交失败，请检查输入！')
+          this.$message.error('表单验证失败，请检查输入！')
         }
-      } catch (error) {
-        // 捕获请求错误
-        console.error('提交失败:', error)
-        this.$message.error('提交失败，请检查输入！')
-      }
+      })
     },
     resetForm() {
-      this.good = { // 重置表单数据
+      this.good = {
         id: null,
         userId: null,
         name: '',
@@ -152,6 +199,7 @@ export default {
         kindId: '',
         desc: ''
       }
+      this.jdGoodId = ''
       this.file = null
     },
     closeDialog() {
