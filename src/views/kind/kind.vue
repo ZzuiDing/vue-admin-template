@@ -20,6 +20,7 @@
           >修改
           </el-button>
           <el-button
+            v-if="role === 2"
             size="mini"
             type="danger"
             style="margin-left: 10px;"
@@ -73,7 +74,8 @@ export default {
       selectedKind: null,
       pageNum: 1, // 当前页
       pageSize: 10, // 每页显示的记录数
-      total: 0 // 总记录数
+      total: 0, // 总记录数
+      role: this.$store.state.user.role // 获取用户角色
     }
   },
   mounted() {

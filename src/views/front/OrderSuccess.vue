@@ -135,7 +135,7 @@ export default {
             // this.paymentHtml = res.data
           } else {
             this.$message.success('支付成功！')
-            // this.$router.push('/')
+            this.$router.push('/')
           }
         }
       } catch (error) {

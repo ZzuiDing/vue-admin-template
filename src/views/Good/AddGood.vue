@@ -3,7 +3,7 @@
     <el-form ref="form" :model="good" :rules="rules" label-width="100px">
       <!-- 新增：京东商品ID输入 -->
       <el-form-item label="京东商品链接">
-        <el-input v-model="jdGoodUrl" placeholder="输入京东商品链接" style="width: 300px; margin-right: 10px;"/>
+        <el-input v-model="jdGoodUrl" placeholder="输入京东商品链接" style="width: 300px; margin-right: 10px;" />
         <el-button type="primary" @click="fetchJDGoodInform">拉取</el-button>
       </el-form-item>
       <el-form-item v-if="good.id !== null" label="商品ID">
@@ -16,7 +16,7 @@
         <el-input v-model="good.name" />
       </el-form-item>
       <el-form-item label="价格" prop="price">
-        <el-input v-model="good.price" type="number" />
+        <el-input-number v-model="good.price" :min="0" />
       </el-form-item>
       <el-form-item label="图片">
         <el-upload
@@ -70,7 +70,7 @@ export default {
         id: null,
         userId: null,
         name: '',
-        price: '',
+        price: 0,
         picture: '',
         kindId: '',
         desc: ''
@@ -158,6 +158,9 @@ export default {
     },
     async submitForm() {
       await this.$refs.form.validate(async(valid) => {
+        if (!isNaN(this.good.price)) {
+          this.good.price = Number(this.good.price)
+        }
         if (valid) {
           try {
             let url = ''

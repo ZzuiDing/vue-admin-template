@@ -4,10 +4,11 @@ import request from '@/utils/request'
 /**
  * 获取所有商品种类
  */
-export function getAllKinds() {
+export function getAllKinds(params) {
   return request({
     url: '/spba-api/kind/getAll',
-    method: 'get'
+    method: 'get',
+    params: params // 传递分页参数
   })
 }
 

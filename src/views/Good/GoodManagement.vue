@@ -15,9 +15,9 @@
       <el-table-column prop="price" label="价格" min-width="60" />
       <el-table-column prop="desc" label="简介" min-width="180" />
       <el-table-column prop="kindName" label="种类" min-width="80" />
-      <el-table-column prop="key_word" label="关键词" min-width="80" />
+      <!--      <el-table-column prop="key_word" label="关键词" min-width="80" />-->
       <el-table-column prop="status" label="状态" min-width="60" />
-      <el-table-column prop="sold_amount" label="销量" min-width="180" />
+      <el-table-column prop="soldAmount" label="销量" min-width="180" />
       <el-table-column label="操作" min-width="200">
         <template #default="scope">
           <el-button v-if="scope.row.status === '下架'" size="mini" type="primary" @click="activate(scope.row.id)">
