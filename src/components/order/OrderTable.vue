@@ -3,8 +3,8 @@
   <div>
     <el-table :data="orders" style="width: 100%">
       <el-table-column prop="id" label="订单ID" width="100" />
-      <el-table-column prop="buyer" label="买方" />
-      <el-table-column prop="seller" label="卖方" />
+      <el-table-column prop="buyerName" label="买方" />
+      <el-table-column prop="sellerName" label="卖方" />
       <el-table-column prop="goodName" label="内容" />
       <el-table-column prop="amount" label="数量" width="50" />
       <el-table-column prop="date" label="日期" />
@@ -39,7 +39,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="status!=='待支付'" prop="addressId" label="地址" />
+      <el-table-column v-if="status!=='待支付'" prop="address" label="地址" />
       <el-table-column label="操作" width="200">
         <template #default="scope">
           <el-button v-if="(scope.row.status!=='待支付'&&scope.row.status!=='已取消')&&(flag==='seller'||flag==='admin')" size="mini" type="primary" @click="$emit('edit', scope.row)">编辑</el-button>

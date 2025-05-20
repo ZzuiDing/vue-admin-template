@@ -81,7 +81,8 @@ export default {
       currentOrder: null,
       flag: '',
       expressDrawerVisible: false,
-      expressInfo: null
+      expressInfo: null,
+      phone: this.$store.state.user.phone
     }
   },
   mounted() {
@@ -102,7 +103,7 @@ export default {
       //   this.$message.error('请求出错，请稍后重试')
       // }
       try {
-        const res = await express(expressNumber)
+        const res = await express(expressNumber,this.phone)
         if (res.code === 20000) {
           this.expressInfo = JSON.parse(res.data)
         } else {

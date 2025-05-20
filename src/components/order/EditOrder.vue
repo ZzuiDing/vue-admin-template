@@ -5,10 +5,10 @@
         <el-input v-model="form.id" :disabled="isEdit" />
       </el-form-item>
       <el-form-item label="买方">
-        <el-input v-model="form.buyer" disabled />
+        <el-input v-model="form.buyerName" disabled />
       </el-form-item>
       <el-form-item label="卖方">
-        <el-input v-model="form.seller" disabled />
+        <el-input v-model="form.sellerName" disabled />
       </el-form-item>
       <el-form-item label="内容">
         <el-input v-model="form.goodName" disabled />
@@ -52,7 +52,7 @@
       </el-form-item>
 
       <el-form-item label="地址" disabled>
-        <el-input v-model="form.addressId" disabled />
+        <el-input v-model="form.address" disabled />
       </el-form-item>
 
       <el-form-item>
@@ -158,7 +158,7 @@ export default {
   methods: {
     async getExpressDetail() {
       try {
-        const res = await express(this.form.expressId)
+        const res = await express(this.form.expressId, this.$store.state.user.phone)
         if (res.code === 20000) {
           this.expressInfo = JSON.parse(res.data)
           this.expressDrawerVisible = true

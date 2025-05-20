@@ -215,7 +215,7 @@ export default {
   methods: {
     async getExpressDetail(id) {
       try {
-        const res = await express(id)
+        const res = await express(id, this.$store.state.user.phone)
         if (res.code === 20000) {
           this.expressInfo = JSON.parse(res.data)
           this.expressDrawerVisible = true
