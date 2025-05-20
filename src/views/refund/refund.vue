@@ -178,6 +178,13 @@ export default {
       OrderdialogVisible: false,
       orderdata: {},
       flag: '',
+      expressInfo: {
+        result: {
+          expName: '',
+          number: '',
+          list: []
+        }
+      },
       ExpressdialogVisible: false,
       form: {
         express: '',

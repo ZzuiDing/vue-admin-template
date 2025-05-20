@@ -4,6 +4,7 @@
       v-model="input"
       placeholder="请输入地址关键词"
       style="width: 200px; margin-bottom: 20px;"
+      @input="handleSearch"
     />
     <el-button type="primary" @click="handleSearch">搜索</el-button>
     <el-button plain @click="openAddDialog()">新增地址</el-button>

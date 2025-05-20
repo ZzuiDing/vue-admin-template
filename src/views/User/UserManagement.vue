@@ -4,6 +4,7 @@
       v-model="input"
       placeholder="请输入用户名"
       style="width: 200px; margin-bottom: 20px;"
+      @input="handleSearch"
     />
     <el-button type="primary" @click="handleSearch">搜索</el-button>
     <el-button plain @click="openAddDialog()">新增用户</el-button>
@@ -86,7 +87,8 @@ export default {
       editUser: null,
       currentPage: 1, // 当前页
       pageSize: 10, // 每页显示条数
-      total: 0 // 数据总数
+      total: 0, // 数据总数
+      keyword: '' // 搜索关键词
     }
   },
   watch: {
@@ -105,7 +107,8 @@ export default {
       try {
         const res = await getUserList({
           page: this.currentPage,
-          pageSize: this.pageSize
+          pageSize: this.pageSize,
+          keyword: this.keyword
         })
         if (res.code === 20000) {
           this.tableData = res.data.records // 假设后端返回 { records, total }
@@ -121,7 +124,7 @@ export default {
     // 搜索功能
     handleSearch() {
       console.log('搜索用户名:', this.input)
-      // TODO: 如果后端有搜索接口，可调用对应 API
+      this.keyword = this.input.trim()
       this.currentPage = 1
       this.fetchData()
     },

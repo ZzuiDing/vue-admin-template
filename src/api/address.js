@@ -6,7 +6,18 @@ import request from '@/utils/request'
  */
 export function getAllAddresses(params) {
   return request({
-    url: '/spba-api/address/getAddressListByUserId',
+    url: '/spba-api/address/searchAddress',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 搜索地址
+ */
+export function SearchAddresses(params) {
+  return request({
+    url: '/spba-api/address/searchAddress',
     method: 'get',
     params
   })

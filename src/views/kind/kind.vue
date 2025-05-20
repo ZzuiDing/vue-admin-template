@@ -4,6 +4,7 @@
       v-model="input"
       placeholder="请输入内容"
       style="width: 200px; margin-bottom: 20px;"
+      @input="handleSearch"
     />
     <el-button type="primary" @click="handleSearch">搜索</el-button>
     <el-button plain @click="openAddDialog()">新增</el-button>
@@ -75,7 +76,8 @@ export default {
       pageNum: 1, // 当前页
       pageSize: 10, // 每页显示的记录数
       total: 0, // 总记录数
-      role: this.$store.state.user.role // 获取用户角色
+      role: this.$store.state.user.role, // 获取用户角色
+      keyword: '' // 搜索关键词
     }
   },
   mounted() {
@@ -87,7 +89,7 @@ export default {
       const params = {
         pageNum: this.pageNum,
         pageSize: this.pageSize,
-        keyword: this.input // 如果有搜索关键字
+        keyword: this.keyword // 如果有搜索关键字
       }
       try {
         const res = await getAllKinds(params)
@@ -105,6 +107,8 @@ export default {
     handleSearch() {
       console.log('搜索:', this.input)
       // 调用 fetchData 方法，传递搜索参数
+      this.pageNum = 1 // 重置页码为1
+      this.keyword = this.input.trim() // 更新搜索关键词
       this.fetchData()
     },
     openAddDialog() {

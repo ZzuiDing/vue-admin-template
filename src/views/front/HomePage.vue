@@ -41,18 +41,18 @@
       </el-row>
     </section>
 
-    <!-- 商品分类 -->
-    <section class="section">
-      <h2 class="section-title">📦 商品分类</h2>
-      <el-row :gutter="20">
-        <el-col v-for="(item, index) in categories" :key="index" :span="8">
-          <el-card class="category-card">
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.desc }}</p>
-          </el-card>
-        </el-col>
-      </el-row>
-    </section>
+    <!--    &lt;!&ndash; 商品分类 &ndash;&gt;-->
+    <!--    <section class="section">-->
+    <!--      <h2 class="section-title">📦 商品分类</h2>-->
+    <!--      <el-row :gutter="20">-->
+    <!--        <el-col v-for="(item, index) in categories" :key="index" :span="8">-->
+    <!--          <el-card class="category-card">-->
+    <!--            <h3>{{ item.title }}</h3>-->
+    <!--            <p>{{ item.desc }}</p>-->
+    <!--          </el-card>-->
+    <!--        </el-col>-->
+    <!--      </el-row>-->
+    <!--    </section>-->
   </div>
 </template>
 

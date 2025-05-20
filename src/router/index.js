@@ -288,6 +288,27 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/log',
+    component: Layout,
+    redirect: '/log/index',
+    name: 'Log',
+    meta: { title: '日志管理', icon: 'el-icon-s-help', roles: [2] }, // 只允许管理员角色访问
+    children: [
+      {
+        path: 'operate',
+        name: '操作日志',
+        component: () => import('@/views/Log/OperateLog.vue'),
+        meta: { title: '操作日志', icon: 'tree', roles: [2] }
+      },
+      {
+        path: 'error',
+        name: '错误日志',
+        component: () => import('@/views/Log/ErrorLog.vue'),
+        meta: { title: '错误日志', icon: 'tree', roles: [2] }
+      }
+    ]
+  },
   // {
   //   path: '/refund',
   //   component: Layout,

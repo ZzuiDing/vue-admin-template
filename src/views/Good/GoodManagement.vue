@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-input v-model="input" placeholder="请输入内容" style="width: 200px; margin-bottom: 20px;" />
+    <el-input v-model="input" placeholder="请输入内容" style="width: 200px; margin-bottom: 20px;" @input="handleSearch" />
     <el-button type="primary" @click="handleSearch">搜索</el-button>
     <el-button plain @click="openAddDialog()">新增</el-button>
 
@@ -76,7 +76,8 @@ export default {
       kindList: [],
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页显示的条数
-      total: 0 // 总记录数
+      total: 0, // 总记录数
+      keyword: '' // 搜索关键词
     }
   },
   watch: {
@@ -131,12 +132,14 @@ export default {
         if (store.getters.role !== 1) {
           response = await getAllGoods({
             pageNum: this.currentPage,
-            pageSize: this.pageSize
+            pageSize: this.pageSize,
+            keyword: this.keyword
           })
         } else {
           response = await getGoodsByUserId({
             pageNum: this.currentPage,
-            pageSize: this.pageSize
+            pageSize: this.pageSize,
+            keyword: this.keyword
           })
         }
 
@@ -160,6 +163,9 @@ export default {
     handleSearch() {
       console.log('搜索:', this.input)
       // 可加入模糊搜索逻辑，例如过滤 this.tableData
+      this.keyword = this.input.trim()
+      this.currentPage = 1 // 重置页码
+      this.fetchData()
     },
 
     // 打开新增商品弹窗

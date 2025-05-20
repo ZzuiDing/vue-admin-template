@@ -64,7 +64,7 @@
       <div v-if="!this.$store.getters.token">
         <p>请登陆后查看购物车</p>
       </div>
-      <div v-else>
+      <div v-else-if="cartItems.length === 0">
         <p>购物车为空~</p>
       </div>
     </el-drawer>
