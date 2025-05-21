@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { topSoldGoods } from '@/api/good'
+import { searchGood } from '@/api/good'
 import { getAllKinds } from '@/api/kind'
 import CommonHeader from '@/layout/components/CommonHeader.vue'
 import CommonFooter from '@/layout/components/CommonFooter.vue'
@@ -96,11 +96,10 @@ export default {
   },
   methods: {
     async fetchGoods() {
-      const res = await topSoldGoods({
-        page: this.currentPage,
-        limit: this.pageSize,
-        query: this.keyword,
-        category: this.selectedCategory
+      const res = await searchGood({
+        pageNum: this.currentPage,
+        pageSize: this.pageSize,
+        keyword: this.keyword
       })
       if (res.code === 20000) {
         this.goods = res.data.records

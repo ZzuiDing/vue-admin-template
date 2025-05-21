@@ -25,21 +25,22 @@
       </el-row>
     </div>
 
-    <!-- 热门商品 -->
-    <section class="section">
-      <h2 class="section-title">🔥 最新出新</h2>
+    <!-- 最新商品 -->
+    <div class="section">
+      <div class="section-header">
+        <h3>🔥 最新出新</h3>
+      </div>
       <el-row :gutter="20">
-        <el-col v-for="(item, index) in newestGoods" :key="index" :span="6">
-          <el-card shadow="hover" @click.native="$router.push({ name: 'ProductDetail', params: { id: item.id } })">
+        <el-col v-for="item in newestGoods" :key="item.id" :span="6">
+          <el-card shadow="hover" @click.native="goToProductDetail(item.id)">
             <img :src="item.picture" class="product-img">
-            <div class="product-info">
-              <h3>{{ item.name }}</h3>
-              <p class="price">¥{{ item.price }}</p>
-            </div>
+            <div class="good-title">{{ item.name }}</div>
+            <div class="good-price">￥{{ item.price }}</div>
           </el-card>
         </el-col>
       </el-row>
-    </section>
+    </div>
+
 
     <!--    &lt;!&ndash; 商品分类 &ndash;&gt;-->
     <!--    <section class="section">-->

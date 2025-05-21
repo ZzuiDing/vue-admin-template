@@ -112,3 +112,11 @@ export function updateStatus(id) {
     method: 'post'
   })
 }
+
+export function searchGood(params) {
+  return request({
+    url: '/spba-api/goods/search',
+    method: 'get',
+    params
+  })
+}
