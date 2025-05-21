@@ -41,7 +41,6 @@
       </el-row>
     </div>
 
-
     <!--    &lt;!&ndash; 商品分类 &ndash;&gt;-->
     <!--    <section class="section">-->
     <!--      <h2 class="section-title">📦 商品分类</h2>-->

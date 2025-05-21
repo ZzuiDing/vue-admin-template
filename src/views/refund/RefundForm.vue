@@ -16,8 +16,8 @@
       <!--    <el-form-item label="退款金额">-->
       <!--      <el-input v-model="refund.amount" disabled/>-->
       <!--    </el-form-item>-->
-      <el-form-item v-if="refund.express" label="退货快递单号" >
-        <el-input v-model="refund.express" disabled/>
+      <el-form-item v-if="refund.express" label="退货快递单号">
+        <el-input v-model="refund.express" disabled />
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="refund.status" placeholder="请选择状态" disabled>

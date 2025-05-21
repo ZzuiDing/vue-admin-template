@@ -25,7 +25,11 @@
       <el-table-column prop="gender" label="性别" min-width="30" />
       <el-table-column prop="phone" label="电话" min-width="60" />
       <el-table-column prop="wealth" label="钱包余额" min-width="100" />
-      <el-table-column prop="role" label="角色" min-width="100" />
+      <el-table-column prop="role" label="角色" min-width="100">
+        <template #default="scope">
+          <span>{{ scope.row.role === 1 ? '用户' : '管理员' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" min-width="200">
         <template #default="scope">
           <el-button

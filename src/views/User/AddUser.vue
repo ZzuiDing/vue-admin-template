@@ -16,12 +16,18 @@
           <el-option label="女" value="女" />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="$store.getters.role===2" label="角色" prop="role">
-        <el-select v-model="form.role" placeholder="请选择角色">
-          <el-option label="管理员" value="2" />
-          <el-option label="用户" value="1" />
-        </el-select>
+      <el-form-item label="角色" prop="role">
+        <template v-if="$store.getters.role === 2">
+          <el-select v-model="form.role" placeholder="请选择角色">
+            <el-option :label="'用户'" :value="1" />
+            <el-option :label="'管理员'" :value="2" />
+          </el-select>
+        </template>
+        <template v-else>
+          <span>{{ roleText(form.role) }}</span>
+        </template>
       </el-form-item>
+
       <el-form-item label="密码" prop="passwd">
         <el-input v-model="form.passwd" type="password" placeholder="请输入密码" />
       </el-form-item>
@@ -72,7 +78,16 @@ export default {
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
         phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
-        role: [{ required: true, message: '请选择角色', trigger: 'change' }],
+        role: [{ required: true, message: '请选择角色', trigger: 'change' },
+          {
+            validator: (rule, value, callback) => {
+              if (![1, 2].includes(Number(value))) {
+                callback(new Error('角色值非法'))
+              } else {
+                callback()
+              }
+            }, trigger: 'change'
+          }],
         passwd: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 6, max: 20, message: '密码长度在6到20个字符之间', trigger: 'blur' }
@@ -91,6 +106,9 @@ export default {
     }
   },
   methods: {
+    roleText(val) {
+      return val === 2 ? '管理员' : '用户'
+    },
     async handleSubmit() {
       await this.$refs.formRef.validate(async valid => {
         if (!valid) return

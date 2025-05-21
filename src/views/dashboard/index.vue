@@ -170,6 +170,8 @@ export default {
       const chartData = []
       for (const status in rawData) {
         const { value, status: label } = rawData[status]
+        // const excluded = ['已取消', '退款中']
+        // if (excluded.includes(label)) continue
         chartData.push({ value, name: label })
       }
       return chartData
@@ -185,6 +187,7 @@ export default {
         legend: { bottom: '0%' },
         series: [
           {
+            color: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272'],
             name: '订单状态',
             type: 'pie',
             radius: ['40%', '70%'],
